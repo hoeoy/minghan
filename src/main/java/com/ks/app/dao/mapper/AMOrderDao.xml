@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AMOrderDao">
+	<resultMap type="AMOrder" id="mOrderResult">
+	<id property="id" column="id" />
+	<result property="userId" column="user_id"/>
+	<result property="shopId" column="shop_id"/>
+	<result property="goodsId" column="goods_id"/>
+	<result property="address" column="address"/>
+	<result property="linkman" column="linkman"/>
+	<result property="mobile" column="mobile"/>
+	<result property="goodsPrice" column="goods_price"/>
+	<result property="goodsNum" column="goods_num"/> 
+	<result property="goodsName" column="goods_name"/>
+	<result property="orderState" column="order_state"/>
+	<result property="tradeNo" column="trade_no"/>
+	<result property="payTime" column="pay_time"/>
+	<result property="expressName" column="express_name"/>
+	<result property="expressNo" column="express_no"/>
+	<result property="sendTime" column="send_time"/>
+	<result property="completeTime" column="complete_time"/>
+	<result property="payState" column="pay_state"/>
+	<result property="createBy.id" column="createBy.id" />
+	<result property="createDate" column="create_date" />
+	<result property="updateBy.id" column="updateBy.id" />
+	<result property="updateDate" column="update_date" />
+	<result property="orderNo" column="order_no"/>
+	<result property="discountsNum" column="discounts_num"/>
+	<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	<sql id="orderColumns">
+		a.id,
+		a.create_date	,
+		a.create_by,
+		a.update_date,
+		a.update_by,
+		a.del_flag,
+		a.order_no,
+		a.user_id,
+		a.goods_id,
+		a.goods_name,
+		a.goods_num,
+		a.add_id,
+		a.address,
+		a.linkman,
+		a.mobile,
+		a.goods_price,
+		a.order_state,
+		a.trade_no,
+		a.pay_time,
+		a.pay_state,
+		a.express_name,
+		a.express_no,
+		a.send_time,
+		a.discounts_num,
+		a.complete_time
+	</sql>
+	
+	<select id="getZGOrder" parameterType="String" resultMap="mOrderResult">
+		SELECT 
+		<include refid="orderColumns"/>
+		FROM m_order_info a WHERE a.user_id = #{userId} AND a.del_flag = '0' AND a.goods_id = '1' ORDER BY create_date DESC
+	</select>
+	
+	<select id="getOrderList" resultMap="mOrderResult">
+		SELECT
+		<include refid="orderColumns"/>
+		FROM m_order_info a WHERE a.user_id = #{userId} 
+		<if test="orderState !=null and orderState != '' ">
+		AND a.order_state = #{orderState}
+		</if>
+		AND a.del_flag = '0'
+		ORDER BY a.create_date DESC
+		LIMIT #{n},#{s}
+	</select>
+	
+		<select id="getAllPage" parameterType="String" resultType="int">
+		SELECT
+		count(id) FROM m_order_info a WHERE del_flag='0'
+		<if test="orderState !=null and orderState != '' ">
+		AND a.order_state = #{orderState}
+		</if>
+		ORDER BY a.create_date DESC
+	</select>
+	
+	<update id="allterState">
+		UPDATE m_order_info SET
+		<if test="payTime != null and payTime != ''">
+		pay_time = #{payTime},
+		</if>
+		<if test="completeTime != null and completeTime != ''">
+		complete_time = #{completeTime},
+		</if>
+		order_state = #{orderState}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getByOrderNo" resultMap="mOrderResult" parameterType="String">
+		SELECT 
+		<include refid="orderColumns"/>
+		FROM m_order_info a WHERE order_no = #{orderNo} AND del_flag = '0'
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO m_order_info (
+		id,
+		user_id,
+		order_no,
+		goods_id,
+		goods_name,
+		goods_num,
+		add_id,
+		address,
+		linkman,
+		mobile,
+		discounts_num,
+		goods_price,
+		order_state,
+		create_date,
+		del_flag
+		) VALUES (
+		#{id},
+		#{userId},
+		#{orderNo},
+		#{goodsId},
+		#{goodsName},
+		#{goodsNum},
+		#{addId},
+		#{address},
+		#{linkman},
+		#{mobile},
+		#{discountsNum},
+		#{goodsPrice},
+		#{orderState},
+		#{createDate},
+		'0'
+		)
+	</insert>
+	<update id="update">
+		UPDATE m_order_info SET 
+		<if test="orderState != null and orderState != ''">
+		order_state = #{orderState},
+		</if>
+		<if test="tradeNo != null and tradeNo != ''">
+		trade_no = #{tradeNo},
+		</if>
+		<if test="payTime != null and payTime != ''">
+		pay_time = #{payTime},
+		</if>
+		<if test="payState != null and payState != ''">
+		pay_state = #{payState},
+		</if>
+		update_date = NOW()
+		WHERE id = #{id}
+	</update>
+	
+	<update id="exitOrder" parameterType="String">
+		UPDATE m_order_info SET
+		order_state = '4'
+		WHERE id = #{id}
+	</update>
+	
+	<select id="get" resultMap="mOrderResult">
+		SELECT 
+		<include refid="orderColumns"/>
+		FROM m_order_info a WHERE a.id=#{id} AND a.del_flag = '0'
+	</select>
+	
+	<select id="getState" parameterType="String" resultType="String">
+		SELECT order_state FROM m_order_info WHERE id= #{id} AND del_flag = '0'
+	</select>
+	
+	<update id="shouhuo" parameterType="String">
+		UPDATE m_order_info SET
+		order_state = '3',
+		complete_time = NOW()
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

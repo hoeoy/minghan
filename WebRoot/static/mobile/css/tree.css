@@ -1,0 +1,84 @@
+		.list-team {
+				width: 100%;
+				border-spacing: 0px;
+			}
+			.list-team td,
+			.list-team th {
+				box-sizing: border-box;
+			}
+			.list-team td {
+				width: 60%;
+			}
+			.list-team:last-child td {
+				width: 40%;
+			}
+			.list-team th {
+				line-height: 24px;
+				/*  height: 40px;*/
+				font-weight: bold;
+				border: none;
+				background: none;
+				/*  border-bottom: 2px solid #5B5B5B;*/
+				text-align: left;
+				width: 60%;
+			}
+			.list-team:last-child th {
+				width: 40%;
+			}
+			.list-team td {
+				line-height: 50px;
+			}
+			/*.name {
+  padding-left: 10px;
+}*/
+			.inner {
+				display: none;
+			}
+			.inner.open {
+				display: table-row;
+			}
+			.switch {
+				display: inline-block;
+				width: 16px;
+				height: 16px;
+				background-image: url(../images/leftright.png);
+				vertical-align: text-top;
+			}
+			.leaf .ico {
+				background-position: -110px -31px;
+			}
+			.outer .ico {
+				background-position: -110px 0;
+			}
+			.outer.open .ico {
+				background-position: -110px -15px;
+			}
+			.outer .switch {
+				background-position: -76px -16px;
+			}
+			.leaf .switch {
+				background-position: -40px -16px;
+			}
+			.outer.open .switch {
+				background-position: -53px -16px;
+			}
+			.list-team .leaf:last-child .switch {
+				background-position: -40px -16px;
+			}
+			#listTable-team>tbody>tr:first-child {
+				background-position: -74px 0;
+			}
+			.text-indent {
+				display: inline-block;
+				width: 8px;
+				float: left;
+				height: 50px;
+			}
+			.outer.open>td,
+			#listTable-team>tbody>tr>td {
+				/*  border-bottom: 1px solid #E6E6E6;*/
+			}
+			tr.outer.focus,
+			tr.leaf.focus {
+				background: #ccc;
+			}

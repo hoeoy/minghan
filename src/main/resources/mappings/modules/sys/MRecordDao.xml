@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MRecordDao">
+    <resultMap id="MRecordMap" type="MRecord">
+		<result property="id" column="id"/>
+		<result property="orderNo" column="order_no"/>
+		<result property="goodsId" column="goods_id"/>
+		<result property="goodsName" column="goods_name"/>
+		<result property="goodsPrice" column="goods_price"/>
+		<result property="goodsNum" column="goods_num"/>
+		<result property="userId" column="user_id"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	<sql id="mRecordSQL">
+		a.id,
+		a.order_no,
+		a.goods_id,
+		a.goods_name,
+		a.goods_price,
+		a.goods_num,
+		a.user_id,
+		a.create_date
+	</sql>
+	
+	<select id="findList" resultMap="MRecordMap">
+		SELECT 
+		<include refid="mRecordSQL"/>,(SELECT name FROM sys_user WHERE id = (SELECT user_id FROM m_user WHERE id = a.user_id)) AS userName , (SELECT mobile FROM sys_user WHERE id = (SELECT user_id FROM m_user WHERE id = a.user_id)) AS mobile 
+		FROM m_record a WHERE del_flag = '0'
+		<if test="goodsName!=null and goodsName !=''">
+		 AND a.goods_name like CONCAT('%', #{goodsName}, '%')
+		 </if>
+		 <if test="userName != null and userName !='' ">
+		AND user_id = any (SELECT id FROM m_user WHERE user_id = any (SELECT id FROM sys_user WHERE name like CONCAT('%', #{userName}, '%')))
+		 </if>
+		 <if test="mobile != null and mobile !='' ">
+		AND user_id = any (SELECT id FROM m_user WHERE user_id = any (SELECT id FROM sys_user WHERE mobile like CONCAT('%', #{mobile}, '%')))
+		 </if>
+		 <if test="startTime!=null and startTime!=''" >
+		AND  a.create_date BETWEEN #{startTime} AND NOW()
+		 </if>
+		 <if test="endTime!=null and endTime!=''">
+		 AND a.create_date &lt; #{endTime}
+		 </if>
+		 <if test="goodsId !=null and goodsId != '' ">
+		 AND a.goods_id = #{goodsId}
+		 </if>
+		 <if test="goodsId == null or goodsId == '' ">
+		 AND a.goods_id != '1'
+		 </if>
+		 ORDER BY a.create_date DESC
+	</select>
+	
+	
+	
+</mapper>

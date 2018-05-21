@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.OrderDao">
+	<resultMap type="Order" id="orderResult">
+		<id property="id" column="id" />
+		<result property="buyId" column="buy_id"/>
+		<result property="goodsId" column="goods_id"/>
+		<result property="goodsType" column="goods_type"/>
+		<result property="goodsName" column="goods_name"/>
+		<result property="payState" column="pay_state"/>
+		<result property="checkState" column="check_state"/>
+		<result property="dealPrice" column="deal_price"/>
+		<result property="orderPrice" column="order_price"/>
+		<result property="changePriceId" column="change_price_id"/>
+		<result property="changePriceDate" column="change_price_date"/>
+		<result property="chargeScore" column="charge_score"/>
+		<result property="chargeBalance" column="charge_balance"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	<select id="getDealPrice" resultType="BigDecimal">
+		select deal_price 
+		from all_order_info 
+		where 1=1
+		 <if test="startTime!=null and startTime!=''" >
+		AND  create_date BETWEEN #{startTime} AND NOW()
+		 </if>
+		 <if test="endTime!=null and endTime!=''">
+		 AND create_date &lt; #{endTime}
+		 </if>
+	</select>
+	
+	<select id="get" parameterType="string" resultMap="orderResult">
+		SELECT *
+		FROM all_order_info
+		WHERE id = #{id}
+	</select>
+	
+</mapper>

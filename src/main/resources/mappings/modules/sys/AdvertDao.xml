@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.AdvertDao">
+    <resultMap id="docResultMap" type="AdvertInfo">
+		<result property="id" column="id"/>
+		<result property="relateId" column="relate_id"/>
+		<result property="advertTitle" column="advert_title"/>
+		<result property="advertType" column="advert_type" />
+		<result property="advertUrl" column="advert_url" />
+		<result property="locationType" column="location_type" />
+		<result property="sort" column="sort" />
+		<result property="relateUrl" column="relate_url" />
+	</resultMap>
+	<sql id="base_column">
+		t.relate_id,t.id,t.advert_title,t.advert_type,t.advert_url,t.location_type,t.sort,t.relate_url
+	</sql>
+	<select id="findList" resultMap="docResultMap" parameterType="AdvertInfo">
+		SELECT
+		<include refid="base_column"/>
+		FROM advert_info t
+		WHERE del_flag = '0'
+		<if test="advertType != null and advertType !=''">
+			and advert_type=#{advertType}
+		</if>
+		<if test="locationType != null and locationType !=''">
+			and location_type=#{locationType}
+		</if>
+		order by sort asc,update_date desc,id desc
+	</select>
+	<select id="get" resultMap="docResultMap" parameterType="string">
+		SELECT
+		<include refid="base_column"/>
+		FROM advert_info t
+		WHERE id=#{id}
+	</select>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO advert_info(
+			relate_id, 
+			advert_title, 
+			advert_type, 
+			relate_url, 
+			advert_url, 
+			location_type,
+			advert_state,
+			sort,
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES (
+			#{relateId}, 
+			#{advertTitle}, 
+			#{advertType}, 
+			#{relateUrl}, 
+			#{advertUrl}, 
+			#{locationType}, 
+			#{advertState}, 
+			#{sort}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE advert_info SET 
+			relate_id=#{relateId}, 
+			advert_title=#{advertTitle}, 
+			advert_type=#{advertType}, 
+			relate_url=#{relateUrl}, 
+			advert_url=#{advertUrl}, 
+			location_type=#{locationType},
+			sort=#{sort},
+			update_by=#{updateBy.id}, 
+			update_date=#{updateDate}
+		WHERE id = #{id}
+	</update>
+	<update id="updateAdvertSort">
+		UPDATE advert_info SET 
+			sort=#{sort},
+			update_by=#{updateBy.id}, 
+			update_date=#{updateDate}
+		WHERE id = #{id}
+	</update>
+	<update id="delete">
+		UPDATE advert_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+    <!-- 广告位置 -->
+	<select id="getLocationTypeById" resultType="AdvertLocationType">
+		SELECT 
+			* 
+		FROM advert_location_type 
+		WHERE id = #{id}
+	</select>
+	
+	<select id="findLocationTypeList" resultType="AdvertLocationType">
+		SELECT 
+			* 
+		FROM advert_location_type 
+		WHERE del_flag = '0' 
+		<!-- <if test="versionType != null and versionType != ''">
+			AND version_type = #{versionType}
+		</if> -->
+		ORDER BY sort asc,update_date DESC
+	</select>
+	
+	<insert id="insertLocationType" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO advert_location_type(
+			name, 
+			module, 
+			type, 
+			sort, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES (
+			#{name}, 
+			#{module}, 
+			#{type}, 
+			#{sort}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="updateLocationTypeSort">
+		UPDATE advert_location_type SET 
+			sort=#{sort},
+			update_by=#{updateBy.id}, 
+			update_date=#{updateDate}
+		WHERE id = #{id}
+	</update>
+</mapper>

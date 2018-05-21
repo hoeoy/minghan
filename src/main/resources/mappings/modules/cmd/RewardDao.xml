@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cmd.dao.RewardDao">
+
+	<!-- 生成一条记录 -->
+	<insert id="insertReward" parameterType="Reward">
+		INSERT INTO reward_relation (
+			id ,
+			order_id ,
+			reward_type ,
+			user_id ,
+			user_reward ,
+			user_star,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{rewardType},
+			#{usertId},
+			#{userReward},
+			#{userStar},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<delete id="deleteRewardByOrderId">
+		DELETE
+		FROM reward_relation
+		WHERE
+			order_id = #{orderId}
+			AND reward_type = #{rewardType}
+	</delete>
+	
+	<delete id="deleteByOrderId" parameterType="string">
+		DELETE
+		FROM reward_relation
+		WHERE
+			order_id = #{orderId}
+	</delete>
+	
+	<delete id="deleteRewardByOrderIdForeach">
+		<foreach collection="map" index="key" item="Reward">
+		DELETE
+		FROM reward_relation
+		WHERE
+			order_id = #{Reward.orderId}
+			AND reward_type = #{Reward.rewardType}
+		</foreach>
+	</delete>
+
+	<!-- 根据主键id查询 -->
+	<select id="getRewardById" parameterType="string" resultType="Reward">
+	SELECT 
+		id ,
+		order_id as orderId,
+		reward_type as rewardType,
+		user_id as userparentId,
+		user_reward as userReward,
+		user_star as userStar,
+		create_by as createBy,
+		create_date as createDate,
+		update_by as updateBy,
+		update_date as updateDate,
+		del_flag as delFlag
+	FROM reward_relation
+	WHERE id = #{id}
+	</select>
+	
+	<select id="get" parameterType="Reward" resultType="Reward">
+		SELECT
+			id ,
+			order_id as orderId,
+			reward_type as rewardType,
+			user_id as userparentId,
+			user_reward as userReward,
+			user_star as userStar,
+			create_by as createBy,
+			create_date as createDate,
+			update_by as updateBy,
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM reward_relation
+		WHERE del_flag = '0'
+			<if test="orderId != null and orderId != ''">AND order_id = #{orderId}</if>
+			<if test="userId != null and userId != ''">AND user_id = #{userId}</if>
+			<if test="userReward != null">AND user_reward = #{userReward}</if>
+	</select>
+	
+	<select id="findList" parameterType="Reward" resultType="Reward">
+		SELECT
+			id ,
+			order_id as orderId,
+			reward_type as rewardType,
+			user_id as userparentId,
+			user_reward as userReward,
+			user_star as userStar,
+			create_by as createBy,
+			create_date as createDate,
+			update_by as updateBy,
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM reward_relation
+		WHERE del_flag = '0'
+			<if test="orderId != null and orderId != ''">AND order_id = #{orderId}</if>
+			<if test="userId != null and userId != ''">AND user_id = #{userId}</if>
+			<if test="userReward != null">AND user_reward = #{userReward}</if>
+	</select>
+	
+</mapper>

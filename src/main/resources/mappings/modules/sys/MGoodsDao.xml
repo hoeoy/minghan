@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MGoodsDao">
+    <resultMap id="mGoodsMap" type="MGoods">
+		<id property="id" column="id"/>
+		<result property="type" column="type"/>
+		<result property="name" column="name"/>
+		<result property="logo" column="logo"/>
+		<result property="description" column="description"/>
+		<result property="market" column="market"/>
+		<result property="price" column="price"/>
+		<result property="sellNum" column="sell_num"/>
+		<result property="putFlag" column="put_flag"/>
+		<result property="sort" column="sort"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	 <resultMap id="mGoodsImageMap" type="MGoodsImage">
+		<id property="id" column="id"/>
+		<result property="goodsId" column="goods_id"/>
+		<result property="goodsImage" column="goods_image"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	<sql id="mGoodsSQL">
+		id,
+		type,
+		name,
+		logo,
+		description,
+		market,
+		price,
+		sell_num,
+		put_flag,
+		sort
+	</sql>
+	
+	<sql id="mGoodsImageSQL">
+		id,
+		goods_id,
+		goods_image
+	</sql>
+	
+	<select id="findList" resultMap="mGoodsMap">
+		SELECT 
+		<include refid="mGoodsSQL"/>
+		FROM m_goods_info WHERE del_flag='0'
+		<if test="name != null and name != ''">
+			AND name like CONCAT('%', #{name}, '%')
+		</if>
+		<if test="type != null and type != ''">
+			AND type = #{type}
+		</if>
+	</select>
+	
+	<select id ="getImages" resultMap="mGoodsImageMap">
+		SELECT
+		<include refid="mGoodsImageSQL"/>
+		FROM m_goods_image_info WHERE goods_id = #{id} AND del_flag = '0'
+	</select>
+	
+	<select id="get" resultMap="mGoodsMap">
+		SELECT
+		<include refid="mGoodsSQL"/>
+		FROM m_goods_info WHERE id = #{id} AND del_flag='0'
+	</select>
+	
+	<!-- 删除商品的关联图片 -->
+	<delete id="deleteImages">
+		DELETE FROM m_goods_image_info
+		WHERE goods_id=#{id}
+	</delete>
+	
+	<insert id="insertGoodsImages" parameterType="java.util.List">
+	INSERT INTO m_goods_image_info(
+		id,
+   		goods_id,
+   		goods_image,
+   		create_by,
+    	create_date,
+    	update_by,
+    	update_date,
+    	del_flag
+		)VALUES
+		<foreach collection="list" item="images" separator=",">
+		(
+		#{images.id},
+		#{images.goodsId},
+		#{images.goodsImage},
+		#{images.createBy.id}, 
+		#{images.createDate}, 
+		#{images.updateBy.id}, 
+		#{images.updateDate}, 
+		#{images.delFlag}
+	)
+	</foreach>
+	</insert>
+	
+	<insert id="insert">
+	INSERT INTO m_goods_info (
+		id,
+    	name,
+    	description,
+    	sort,
+    	type,
+    	logo,
+    	market,
+    	price,
+    	create_by,
+    	create_date,
+    	update_by,
+    	update_date,
+    	del_flag,
+    	put_flag
+	)VALUES(
+	#{id},
+	#{name},
+	#{description},
+	#{sort},
+	#{type},
+	#{logo},
+	#{market},
+	#{price},
+	#{createBy.id}, 
+	#{createDate}, 
+	#{updateBy.id}, 
+	#{updateDate}, 
+	#{delFlag},
+	'0'
+	)
+	</insert>
+	
+	<update id="update">
+	UPDATE m_goods_info SET
+		id = #{id},
+    	name = #{name},
+    	description = #{description},
+    	sort = #{sort},
+    	type = #{type},
+    	logo = #{logo},
+    	market = #{market},
+    	price = #{price},
+    	update_by=#{updateBy.id},
+    	update_date=#{updateDate},
+    	put_flag = #{putFlag}
+    	WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE m_goods_info SET
+		del_flag = '1'
+		WHERE id=#{id}
+	</update>
+</mapper>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AVersionDao">
+
+	<!-- <typeAlias alias="articleInfo" type="com.ks.app.entity.AArticleInfo"/> -->
+	
+	<!-- <resultMap type="AVersionInfo" id="versionInfoMap">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="charge" column="charge"/>
+		<result property="imgName" column="image_name"/>
+		<result property="openTime" column="open_time"/>
+		<result property="traffic" column="traffic"/>
+		<result property="location" column="location"/>
+		<result property="longitude" column="longitude"/>
+		<result property="latitude" column="latitude"/>
+		
+		<result property="rangeNum" column="range_num"/>
+	</resultMap>
+	
+	<sql id="base_column">
+		t.id,t.title,t.name,t.content,t.charge,t.image_name,t.traffic,t.open_time,t.location,t.longitude,t.latitude
+	</sql> -->
+	<select id="getLastVersionInfo" resultType="AVersionInfo" parameterType="AVersionInfo">
+		SELECT
+			t.*
+		FROM version_info t
+		WHERE t.del_flag = '0' 
+		<if test="versionType != null and versionType != ''">
+			AND t.version_type =#{versionType}
+		</if>
+		ORDER BY CONVERT(t.version_code,SIGNED) desc,t.id desc
+		limit 1
+	</select>
+</mapper>

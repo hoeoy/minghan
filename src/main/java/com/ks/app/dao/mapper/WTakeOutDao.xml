@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.WTakeOutDao">
+
+<resultMap id="takeOutResult" type="WTakeOut">
+		<id property="id" column="id" />
+		<result property="type" column="type"/>
+		<result property="brokerage" column="brokerage"/>
+		<result property="back" column="back"/>
+		<result property="backMonthId" column="back_month_id"/>
+		<result property="userId" column="user_id"/>
+		<result property="auditId" column="audit_id"/>	
+		<result property="remittanceFlag" column="remittance_flag"/>
+		<result property="remittanceGM" column="remittance_gm"/>
+		<result property="serviceCharge" column="service_charge"/>
+		<result property="auditName" column="audit_name"/>
+		<result property="createBy.id" column="create_by" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="update_by" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	<sql id="takeOutColumns">
+	id,
+	type,
+	brokerage,
+	back,
+	back_month_id,
+	user_id,
+	user_name,
+	audit_flag,
+	audit_id,
+	audit_name,
+	service_charge,
+	remittance_flag,
+	create_by,
+	create_date,
+	update_by,
+	update_date,
+	del_flag,
+	remittance_gm
+	</sql>
+	
+	<!-- 未审核改为已审核 -->
+	<update id="changeFlag">
+		UPDATE 
+			order_out_info
+		SET 
+			audit_flag = '1', 
+			audit_id = #{userId},
+			update_date = NOW(),
+			remittance_flag = '0'
+		WHERE 
+			id = #{id}
+	</update>
+
+	<!-- 订单表插入项目信息 -->
+	<insert id="insertOrder" parameterType="WTakeOut">
+		INSERT INTO order_out_info (
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id,
+			user_id ,
+			user_name ,
+			audit_flag ,
+			audit_id ,
+			audit_name ,
+			service_charge,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag,
+			remittance_flag
+		) VALUES (
+			#{id},
+			#{type},
+			#{brokerage},
+			#{back},
+			#{backMonthId},
+			#{userId},
+			#{userName},
+			#{auditFlag},
+			#{auditId},
+			#{auditName},
+			#{serviceCharge},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag},
+			#{remittanceFlag}
+		)
+	</insert>
+		
+	<!-- 根据提现单主键id查 -->
+	<select id="getTakeOutById" parameterType="string" resultType="WTakeOut">
+		SELECT
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id as backMonthId,
+			user_id as userId,
+			user_name as userName,
+			service_charge AS serviceCharge,
+			audit_flag as auditFlag,
+			audit_id as auditId,
+			audit_name as auditName,
+			remittance_flag as remittanceFlag
+		FROM order_out_info
+		WHERE id = #{orderId}
+	</select>
+
+	<!-- 根据用户id获取全部提现单 -->
+	<select id="getList" resultType="WTakeOut">
+		SELECT
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id as backMonthId,
+			user_id as userId,
+			user_name as userName,
+			audit_flag as auditFlag,
+			audit_id as auditId,
+			audit_name as auditName,
+			service_charge AS serviceCharge,
+			create_by as "createBy.id",
+			create_date as createDate,
+			update_by as "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag,
+			remittance_flag as remittanceFlag
+		FROM order_out_info where del_flag='0' order by create_date desc,id desc
+	</select>
+	
+	<select id="findList" resultMap="takeOutResult">
+	SELECT
+			<include refid="takeOutColumns"/>
+		FROM order_out_info 
+		WHERE audit_flag='1'
+		 <if test="userName!=null and userName!=''">
+		 AND user_name like CONCAT('%', #{userName}, '%')
+		 </if>
+		 <if test="startTime!=null and startTime!=''" >
+		AND  create_date BETWEEN #{startTime} AND NOW()
+		 </if>
+		 <if test="endTime!=null and endTime!=''">
+		 AND create_date &lt; #{endTime}
+		 </if>
+		 <if test="remittanceFlag !=null and remittanceFlag !=''">
+		 AND remittance_flag = #{remittanceFlag}
+		 </if>
+		 <if test="type !=null and type !=''">
+		 AND type = #{type}
+		 </if>
+		ORDER BY create_date DESC,id desc
+	</select>
+	
+	<update id="remi" parameterType="String">
+	UPDATE order_out_info SET
+	 remittance_flag = '1' ,
+	 remittance_gm = #{gmId}
+	 WHERE id = #{id}
+	</update>
+	
+	<!-- 根据order_out_info主键id查询month_back_id -->
+	<select id="getMonthBackId" parameterType="string" resultType="string">
+		SELECT back_month_id
+		FROM order_out_info
+		WHERE id = #{id} and del_flag = '0'
+	</select>
+</mapper>
+
+

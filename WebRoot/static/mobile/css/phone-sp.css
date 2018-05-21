@@ -1,0 +1,127 @@
+@media only screen and (min-width: 320px) and (max-width: 480px) {
+html{
+	font-family: "΢���ź�";
+	font-size: 16px;
+}
+.mui-content.mui-index .mui-slider,.mui-content.mui-detail .mui-slider{
+    max-height: 280px;
+    height:190px;
+}
+.mui-index .mui-slider .mui-slider-group .mui-slider-item img,.mui-detail .mui-slider .mui-slider-group .mui-slider-item img{
+    max-height: 280px;
+}
+/*.mui-grid-view.mui-grid-9.minghan-index li:last-child img {
+    height: 90px;
+}*/
+.mui-grid-view.mui-grid-9.minghan-index li img {
+    height: 160px;
+}
+
+.mui-table-view.mui-one-center .mui-media-object {
+    line-height: 80px;
+    min-width:80px;
+    height: 80px;
+    object-fit: cover;
+}
+.mui-table-view.minghan-index .mui-table-view-cell.shangpin .mui-media-body {
+    margin-top: 98px;
+    height: 62px;
+}
+.mui-index-project .project-img-back {
+    height: 258px;
+}
+.mui-project-list .project-img-back {
+    height: 188px;
+}
+ .mui-project-list .mui-media-body {
+    margin-top: 128px;
+} 
+.mui-row.mui-content-padded img {
+    height: 130px;
+}
+}
+@media only screen and (min-width: 481px) and (max-width: 720px) {
+html{
+	font-family: "΢���ź�";
+	font-size: 18px;
+}
+.mui-content.mui-index .mui-slider,.mui-content.mui-detail .mui-slider {
+    max-height: 300px;
+}
+.mui-index .mui-slider .mui-slider-group .mui-slider-item img,.mui-detail .mui-slider .mui-slider-group .mui-slider-item img{
+    max-height: 300px;
+}
+
+/*.mui-grid-view.mui-grid-9.minghan-index li:last-child img {
+    height: 110px;
+}*/
+.mui-grid-view.mui-grid-9.minghan-index li img {
+    height: 180px;
+}
+
+.mui-table-view.mui-one-center .mui-media-object {
+    line-height: 90px;
+    min-width: 90px;
+    height: 90px;
+    object-fit: cover;
+}
+.mui-table-view.minghan-index .mui-table-view-cell.shangpin .mui-media-body {
+    margin-top: 118px;
+    height: 62px;
+}
+.mui-index-project .project-img-back {
+    height: 278px;
+}
+.mui-project-list .project-img-back {
+    height: 218px;
+}
+.mui-project-list .mui-media-body {
+    margin-top: 158px;
+} 
+.mui-row.mui-content-padded img {
+    height: 170px;
+}
+}
+
+@media only screen and (min-width: 721px) and (max-width: 1024px) {
+	html{
+	font-family: "΢���ź�";
+	font-size: 22px;
+}
+.mui-content.mui-index .mui-slider,.mui-content.mui-detail .mui-slider {
+    max-height: 400px;
+}
+.mui-index .mui-slider .mui-slider-group .mui-slider-item img,.mui-detail .mui-slider .mui-slider-group .mui-slider-item img{
+    max-height: 400px;
+}
+/*
+.mui-grid-view.mui-grid-9.minghan-index li:last-child img {
+    height: 160px;
+}*/
+.mui-grid-view.mui-grid-9.minghan-index li img {
+    height: 280px;
+}
+
+.mui-table-view.mui-one-center .mui-media-object {
+    line-height: 100px;
+    min-width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+.mui-table-view.minghan-index .mui-table-view-cell.shangpin .mui-media-body {
+    margin-top: 218px;
+    height: 62px;
+}
+.mui-index-project .project-img-back {
+    height: 308px;
+}
+.mui-project-list .project-img-back {
+    height: 278px;
+}
+.mui-project-list .mui-media-body {
+    margin-top: 218px;
+} 
+.mui-row.mui-content-padded img {
+    height: 200px;
+}
+}

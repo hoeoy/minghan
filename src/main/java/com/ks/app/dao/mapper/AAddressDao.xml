@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AAddressDao" >
+	<resultMap type="AAddress" id="aAddressResult">
+		<id property="id" column="id" />
+		<result property="userId" column="user_id"/>
+		<result property="linkman" column="linkman"/>
+		<result property="mobile" column="mobile"/>
+		<result property="province" column="province"/>
+		<result property="city" column="city"/>
+		<result property="zone" column="zone"/>
+		<result property="addr" column="addr"/>
+		<result property="primaryFlag" column="primary_flag"/>
+	</resultMap>
+	
+	<sql id="aAddressColumns">
+		a.id,
+		a.user_id,
+		a.linkman,
+		a.mobile,
+		a.province,
+		a.city,
+		a.zone,
+		a.addr,
+		a.primary_flag
+	</sql>
+	
+	<select id="getAddressByUserId" parameterType="String" resultMap="aAddressResult">
+		SELECT 
+		<include refid="aAddressColumns"/>
+		FROM address_info a
+		WHERE user_id = #{userId}
+		ORDER BY primary_flag DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO address_info (
+		id,
+		user_id,
+		linkman,
+		mobile,
+		province,
+		city,
+		zone,
+		addr,
+		primary_flag,
+		create_by,
+    	create_date,
+    	update_by,
+    	update_date
+		)VALUES(
+		#{id},
+		#{userId},
+		#{linkman},
+		#{mobile},
+		#{province},
+		#{city},
+		#{zone},
+		#{addr},
+		#{primaryFlag},
+		#{createBy.id}, 
+		#{createDate}, 
+		#{updateBy.id}, 
+		#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE address_info SET
+		linkman = #{linkman},
+		mobile = #{mobile},
+		province = #{province},
+		city = #{city},
+		zone = #{zone},
+		addr = #{addr},
+		update_by=#{updateBy.id},
+    	update_date=#{updateDate}
+    	WHERE id = #{id}
+	</update>
+	
+	<update id="primaryDown">
+		UPDATE address_info SET
+		primary_flag = '0'
+		WHERE primary_flag = '1'
+	</update>
+	
+	<update id="primaryUp" parameterType="String">
+		UPDATE address_info SET
+		primary_flag = '1'
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE address_info SET 
+			del_flag = '1'
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getPrimaryByUserId" parameterType="String" resultMap="aAddressResult">
+		SELECT 
+		<include refid="aAddressColumns"/>
+		FROM address_info a WHERE a.user_id = #{id}
+		AND a.primary_flag = '1'
+		AND a.del_flag = '0'
+	</select>
+	
+	<select id="get" parameterType="String" resultMap="aAddressResult">
+		SELECT 
+		<include refid="aAddressColumns"/>
+		FROM address_info a WHERE id = #{id}
+		AND a.del_flag = '0'
+	</select>
+	
+	<select id="findAddressOfUser" parameterType="String" resultMap="aAddressResult">
+		SELECT 
+		<include refid="aAddressColumns"/>
+		FROM address_info a WHERE user_id=#{userId}
+		AND a.del_flag = '0'
+		AND a.primary_flag='0'
+	</select>
+	
+	<select id="getMyaddress" parameterType="String" resultMap="aAddressResult">
+		SELECT
+		<include refid="aAddressColumns"/>
+		FROM address_info a WHERE a.user_id=#{id}
+		AND a.del_flag = '0'
+		ORDER BY a.primary_flag DESC, a.create_date DESC
+	</select>
+	
+</mapper>
