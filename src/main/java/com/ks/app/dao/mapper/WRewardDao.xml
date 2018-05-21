@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.WRewardDao">
+
+	<!-- 生成一条记录 -->
+	<insert id="insertReward" parameterType="WReward">
+		INSERT INTO reward_relation (
+			id ,
+			order_id ,
+			reward_type ,
+			user_id  ,
+			user_reward  ,
+			user_star,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag
+		) VALUES (
+			#{id},
+			#{orderId},
+			#{rewardType},
+			#{userId},
+			#{userReward},
+			#{userStar},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+
+	<!-- 根据主键id查询 -->
+	<select id="getRewardById" parameterType="string" resultType="WReward">
+		SELECT 
+			id ,
+			order_id as orderId,
+			reward_type as rewardType,
+			user_id as userId,
+			user_reward as userReward,
+			user_star as userStar,
+			create_by as createBy,
+			create_date as createDate,
+			update_by as updateBy,
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM reward_relation
+		WHERE id = #{id}
+	</select>
+	
+	<select id="getRewardByorderId"  resultType="WReward">
+		SELECT 
+			id ,
+			order_id as orderId,
+			reward_type as rewardType,
+			user_id as userId,
+			user_reward as userReward,
+			user_star as userStar,
+			create_by as createBy,
+			create_date as createDate,
+			update_by as updateBy,
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM reward_relation
+		WHERE order_id = #{orderId} AND user_reward = #{userReward} AND user_id = #{userId}
+	</select>
+</mapper>

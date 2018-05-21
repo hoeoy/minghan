@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MonthBackDao">
+	<resultMap type="MonthBack" id="monthBackResult">
+	<id property="id" column="id" />
+	<result property="userId" column="user_id"/>
+	<result property="orderId" column="order_id"/>
+	<result property="comboId" column="combo_id"/>
+	<result property="stage" column="stage"/>
+	<result property="money" column="money"/>
+	<result property="state" column="state"/>
+	<result property="startTime" column="start_time"/>
+	<result property="autoTime" column="auto_time"/>
+	<result property="type" column="type"/>
+	<result property="auditFlag" column="audit_flag"/>
+	<result property="createBy.id" column="createBy.id" />
+	<result property="createDate" column="create_date" />
+	<result property="updateBy.id" column="updateBy.id" />
+	<result property="updateDate" column="update_date" />
+	<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	<sql id="monthBackColumns">
+	id,
+	user_id,
+	order_id,
+	combo_id,
+	stage,
+	money,
+	state,
+	start_time,
+	auto_time,
+	type,
+	audit_flag,
+	create_by,
+	create_date,
+	update_by,
+	update_date,
+	del_flag
+	</sql>
+	
+	<select id="getCanCheck" resultMap="monthBackResult">
+	SELECT
+		<include refid="monthBackColumns"></include>
+	FROM month_back_info
+	WHERE
+		del_flag='0'
+		AND audit_flag = '0'
+		AND state = '0'
+		AND auto_time > NOW()
+		AND NOW() > start_time
+	</select>
+	
+	<select id="findList" resultMap="monthBackResult">
+	SELECT 
+	<include refid="monthBackColumns" />
+	FROM month_back_info
+	WHERE del_flag='0'
+	 <if test="userId!=null and userId!=''">
+		 AND user_id = any (SELECT id FROM sys_user WHERE name like CONCAT('%', #{userId}, '%'))
+		 </if>
+	  ORDER BY user_id DESC,CONVERT(stage,SIGNED) ASC
+	</select>
+	
+	<select id="getComboNameById" parameterType="String" resultType="String">
+	select title from combo_info where id = #{id}
+	</select>
+	
+	<delete id="deleteMonthBackByOrderId" parameterType="string">
+		DELETE
+		FROM month_back_info
+		WHERE order_id = #{orderId}
+	</delete>
+	
+</mapper>

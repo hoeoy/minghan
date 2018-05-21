@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cmd.dao.ShopDao">
+
+	<resultMap id="shopMap" type="Shop">
+		<id property="id" column="id"/>
+		<result property="shopName" column="shop_name"/>
+		<result property="shopAddress" column="shop_address"/>
+		<result property="shopTel" column="shop_tel"/>
+		<result property="longitude" column="longitude"/>
+		<result property="latitude" column="latitude"/>
+		<result property="shopLogo" column="shop_logo"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	<sql id="allColumn">
+		id,
+		shop_name,
+		shop_address,
+		shop_tel,
+		longitude,
+		latitude,
+		shop_logo,
+    	create_by,
+    	create_date,
+    	update_by,
+    	update_date,
+    	del_flag
+	</sql>
+
+	<select id="findList" resultMap="shopMap">
+		SELECT
+		<include refid="allColumn"></include>
+		FROM shop_info 
+		WHERE del_flag='0'
+	</select>
+	
+	<update id="update">
+		UPDATE shop_info 
+		SET 
+			shop_name = #{shopName},
+			shop_address = #{shopAddress},
+			shop_tel = #{shopTel},
+			longitude = #{longitude},
+			latitude = #{latitude},
+			shop_logo = #{shopLogo},
+			update_date = NOW()
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE shop_info 
+		SET del_flag = '1'
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insert">
+		INSERT INTO shop_info (
+			<include refid="allColumn"></include>
+		) VALUES (
+			#{id},
+			#{shopName},
+			#{shopAddress},
+			#{shopTel},
+			#{longitude},
+			#{latitude},
+			#{shopLogo},
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{delFlag}
+		)
+	</insert>
+
+	<select id="get" resultMap="shopMap">
+		SELECT
+		<include refid="allColumn"></include>
+		FROM shop_info 
+		WHERE del_flag='0' AND id = #{id}
+	</select>
+
+	<!-- 根据套餐id查询所属门店的id -->
+	<select id="getShopIdByComboId" parameterType="string" resultType="string">
+		SELECT
+			shop_id as shopId 
+		FROM shop_r_combo 
+		WHERE combo_id = #{comboId}
+	</select>
+
+	<!-- 查某项目所属门店的id -->
+	<select id="getShopByItemId" parameterType="string" resultType="string">
+		SELECT
+			shop_id as shopId 
+		FROM shop_r_item 
+		WHERE item_id = #{itemId}
+	</select>
+
+	<!-- 查询门店详情 -->
+	<select id="getShopById" parameterType="string" resultMap="shopMap">
+		SELECT 
+			<include refid="allColumn"></include>
+		FROM shop_info t 
+		WHERE 
+			del_flag = '0' and id = #{id}
+	</select>
+	
+</mapper>

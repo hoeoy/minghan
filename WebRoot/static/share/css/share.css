@@ -1,0 +1,380 @@
+.non-select {
+    user-select: none;
+    -o-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    cursor: default
+}
+
+.ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    white-space: nowrap
+}
+
+img.topicpicture {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 4px;
+    margin-right: 4px;
+}
+
+#pictures {
+    float: left;
+    width: 300px;
+}
+
+html {
+    -ms-overflow-style: scrollbar
+}
+
+body {
+    font-family: Helvetica, Arial, "å¾®è½¯é›…é»‘", sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, input, select, textarea {
+    font-family: Segoe UI, Helvetica, Arial, "å¾®è½¯é›…é»‘", sans-serif;
+    font-weight: normal
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0
+}
+
+a:hover {
+    text-decoration: none
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: rgba(255, 255, 255, 0.6);
+    -webkit-border-radius: 0
+}
+
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px
+}
+
+::-webkit-scrollbar-thumb:vertical {
+    height: 18px;
+    background-color: #ccc;
+    -webkit-border-radius: 8px;
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+    border: 2px solid #fff
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+    width: 18px;
+    background-color: #ccc;
+    -webkit-border-radius: 8px
+}
+
+::-webkit-scrollbar-thumb:hover {
+    height: 18px;
+    background-color: #aaa;
+    -webkit-border-radius: 8px
+}
+
+.main-header, .main-footer {
+    overflow: hidden
+}
+
+.main-header .btn, .main-footer .btn {
+    margin-top: 8px
+}
+
+.logo {
+    font-size: 28px;
+    margin: 0;
+    float: left;
+    position: relative;
+    height: 60px;
+}
+
+.logo span {
+    color: #de9428;
+    font-size: 20px;
+    line-height: 30px;
+    vertical-align: top;
+    left: 56px;
+}
+
+.logo img {
+    height: 60px
+}
+
+.logo .slogan1 {
+    position: absolute;
+    font-size: 12px;
+    top: 30px;
+    color: #666
+}
+
+.logo .slogan2 {
+    position: absolute;
+    font-size: 12px;
+    top: 30px;
+    color: #ccc
+}
+
+.main-header {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+}
+
+.main-footer {
+    height: 50px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.7)
+}
+
+.main-body {
+    padding-bottom: 70px;
+    text-align: center;
+}
+
+.item {
+
+    font-size: 16px;
+    line-height: 1.6em;
+    font-weight: 200;
+    padding: 10px;
+    border-bottom: 1px solid #ddd
+}
+
+.item label {
+    margin-bottom: 0
+}
+
+.content {
+    background-color: #f6f6f6;
+    padding: 10px;
+    border-bottom: 1px solid #ddd
+}
+
+.content label {
+    padding-right: 10px;
+    font-weight: 200;
+    margin: 0
+}
+
+.content ul {
+    overflow: hidden
+}
+
+.content .text {
+    color: #888
+}
+
+.content .title {
+    font-size: 16px
+}
+
+.demand {
+    font-size: 16px
+}
+
+.owner {
+    overflow: hidden;
+    margin-bottom: 14px
+}
+
+.owner .photo img {
+    width: 90px;
+    height: 90px;
+}
+
+.owner .avatar {
+
+}
+
+.owner .avatar img {
+    width: 40px;
+    height: 40px;
+}
+
+.owner .name {
+    padding-left: 50px;
+    line-height: 64px;
+    font-size: 15px
+}
+
+.owner .name label {
+    color: #09f;
+}
+
+.owner .name .time {
+    font-size: 14px;
+    color: #999
+}
+
+.namelabel {
+    padding-left: 8px;
+    font-size: 16px;
+    color: #09f;
+    display: block;
+}
+
+.memolabel {
+    padding-left: 8px;
+    font-size: 12px;
+    color: #999999;
+}
+
+.timelabel {
+    font-size: 12px;
+    color: #999999;
+    float: right;
+}
+
+.emoji_img {
+    width: 22px;
+    height: 22px;
+}
+
+.black {
+    color: #5B5B5B;
+}
+
+.contentlabel {
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.prop {
+    margin-bottom: 5px
+}
+
+.prop label {
+    width: 80px
+}
+
+.count {
+    padding-left: 30px
+}
+
+.highlight {
+    color: #e00
+}
+
+.tag {
+    padding: 5px 7px;
+    float: left;
+    color: #fff;
+    font-size: 16px;
+    margin-right: 10px
+}
+
+.tag_1 {
+    background-color: #5f9877
+}
+
+.tag_2 {
+    background-color: #968e5d
+}
+
+.tag_3 {
+    background-color: #0495b4
+}
+
+.tag_4 {
+    background-color: #4873d9
+}
+
+.phone {
+    width: 18px;
+    height: 18px
+}
+
+.request .owner .avatar img {
+    width: 60px;
+    height: 60px
+}
+
+.request .owner .name {
+    padding-left: 75px;
+    line-height: 30px
+}
+
+.request .owner .name label {
+    color: #09f
+}
+
+.request .owner .name p {
+    font-size: 12px;
+    color: #999
+}
+
+.request .btn-default {
+    border-width: 0;
+    background-color: #ddd
+}
+
+.request .good {
+    color: #d00
+}
+
+.users .avatar {
+    margin: 1px;
+    display: inline-block
+}
+
+.users .avatar img {
+    width: 28px;
+    height: 28px;
+    border-radius: 28px
+}
+
+.comments {
+    padding: 0
+}
+
+.comment {
+    padding: 10px;
+    overflow: hidden;
+    border-bottom: 1px solid #ddd
+}
+
+.comment .avatar {
+    float: left
+}
+
+.comment .avatar img {
+    width: 40px;
+    height: 40px;
+}
+
+.comment .name {
+    padding-left: 50px;
+    line-height: 24px;
+    font-size: 16px
+}
+
+.comment .name label {
+    color: #09f;
+    font-weight: 200;
+    margin: 0
+}
+
+.comment .name .comment_text {
+    color: #999;
+    font-size: 14px
+}
+
+.comment .name .time {
+    font-size: 14px;
+    color: #999
+}
+
+.comment .name p {
+    font-size: 14px;
+    line-height: 1.4em
+}

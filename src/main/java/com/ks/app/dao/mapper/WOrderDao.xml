@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.WOrderDao">
+
+	<!-- 获取用户有多少条订单数量 -->
+	<select id="getNumOfOrdersByUserId" resultType="int">
+		select ifnull(count(id),0) from all_order_info where buy_id = #{id}
+	</select>
+
+	<!-- 修改消耗的积分余额 -->
+	<update id="afterPayChange">
+		UPDATE 
+			all_order_info 
+		SET
+			charge_score = #{score},
+			charge_balance = #{balance}
+		WHERE
+			id = #{id}
+	</update>
+	
+	<!-- 检查是否购买过任意商品（购买则有订单） -->
+	<select id="hasOrder" parameterType="string" resultType="java.lang.Integer">
+		select count(1) from all_order_info 
+		where buy_id = #{userId} 
+	</select>
+
+	<!-- 检查是否购买过套餐 -->
+	<select id="hasCombo" parameterType="string" resultType="java.lang.Integer">
+		select 1 from all_order_info 
+		where buy_id = #{userId} and goods_type = '1'
+	</select>
+
+	<!-- 订单表插入 -->
+	<insert id="insertOrder" parameterType="WOrder">
+		INSERT INTO all_order_info (
+			id,
+			buy_id,
+			goods_id,
+			goods_type,
+			goods_name,
+			pay_state ,
+			check_state ,
+			deal_price ,
+			order_price ,
+			change_price_id ,
+			change_price_date ,
+			charge_score ,
+			charge_balance,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag
+		) VALUES (
+			#{id},
+			#{buyId},
+			#{goodsId},
+			#{goodsType},
+			#{goodsName},
+			#{payState},
+			#{checkState},
+			#{dealPrice},
+			#{orderPrice},
+			#{changePriceId},
+			#{changePriceDate},
+			#{chargeScore},
+			#{chargeBalance},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<!-- 改支付状态 -->
+	<update id="changePayState">
+		UPDATE
+			all_order_info 
+		SET 
+			pay_state = #{state},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 审核状态改为已审核 -->
+	<update id="Checked">
+		UPDATE
+			all_order_info 
+		SET 
+			check_state = '1',
+			change_price_id = #{ManageId},
+			change_price_date = NOW(),
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+
+	<!-- 根据改价人id、订单号改成交价 -->
+	<update id="changeDealPrice">
+		UPDATE
+			all_order_info 
+		SET 
+			deal_price = #{price},
+			change_price_id = #{changePriceId},
+			charge_balance = #{chargeBalance},
+			change_price_date = NOW(),
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 查询可改价订单 -->
+	<select id="canBeChangeOrder" resultType="WOrder">
+		SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			goods_name as goodsName,
+			pay_state as payState,
+			check_state as checkState,
+			order_price as orderPrice,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+			create_date as createDate
+		FROM all_order_info
+		WHERE 
+			goods_type = "2"
+			and pay_state = '0'
+			and check_state = '0'
+			and del_flag = '0'
+		ORDER BY 
+			create_date DESC
+	</select>
+
+	<!-- 根据订单号查询订单 -->
+	<select id="getOrderByOutTradeId" parameterType="string" resultType="WOrder">
+		SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			goods_name as goodsName,
+			pay_state as payState,
+			check_state as checkState,
+			order_price as orderPrice,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance
+		FROM all_order_info
+		WHERE id = #{id}
+	</select>
+
+	<!-- 根据用户id查订单 -->
+	<select id="getOrdersByUserId" resultType="WOrder">
+		SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			goods_name as goodsName,
+			pay_state as payState,
+			check_state as checkState,
+			order_price as orderPrice,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+			create_by as "createBy.id",
+			create_date as createDate,
+			update_by as "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM all_order_info
+		WHERE buy_id = #{userId}
+		<if test="goodsType != null and goodsType != ''">
+			and goods_type = #{goodsType}
+		</if>
+		ORDER BY create_date DESC
+	</select>
+	
+	<!-- 分页获取用户全部消费记录 -->
+	<select id="getOrdersByUserIdByPage" resultType="WOrder">
+		SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			goods_name as goodsName,
+			pay_state as payState,
+			check_state as checkState,
+			order_price as orderPrice,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+			create_by as "createBy.id",
+			create_date as createDate,
+			update_by as "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM all_order_info
+		WHERE buy_id = #{id} and del_flag = '0'
+		ORDER BY create_date DESC
+		LIMIT #{n},#{s}
+	</select>
+	
+	<select id="getWOrderById"  resultType="WOrder">
+	SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			goods_name as goodsName,
+			pay_state as payState,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+			create_by as "createBy.id ",
+			create_date as createDate,
+			update_by as "updateBy.id ",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM all_order_info
+		WHERE id = #{id}
+	</select>
+</mapper>

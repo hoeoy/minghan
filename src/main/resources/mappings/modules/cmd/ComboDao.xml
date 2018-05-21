@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cmd.dao.ComboDao" >
+
+	<resultMap id="baseMap" type="Combo">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="number" column="number"/>
+		<result property="sort" column="sort"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="description" column="description"/>
+		<result property="discount" column="discount" />
+		<result property="oldPrice" column="old_price" />
+		<result property="currentPrice" column="current_price" />
+		<result property="score" column="score" />
+		<result property="status" column="status" />
+		<result property="saleCount" column="sale_count" />
+		<result property="logo" column="logo" />
+	</resultMap>
+	
+	<select id="findList" resultMap="baseMap">
+		SELECT 
+			t.id, 
+			t.name, 
+			t.number, 
+			t.sort, 
+			t.title, 
+			t.content, 
+			t.description, 
+			t.discount, 
+			t.old_price, 
+			t.current_price, 
+			t.score, 
+			t.status, 
+			t.sale_count, 
+			t.logo
+		FROM combo_info t 
+		WHERE t.del_flag = #{DEL_FLAG_NORMAL} and t.status = '1'
+		<if test="name != null and name != ''">
+			AND t.name like 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{name}, '%')</if>
+		</if>
+		<if test="description != null and description != ''">
+			AND t.description like 
+					<if test="dbName == 'oracle'">'%'||#{description}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{description}, '%')</if>
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY t.sort
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="update">
+		UPDATE combo_info SET 
+			name = #{name},
+			number = #{number},
+			sort = #{sort},
+			title = #{title},
+			content = #{content},
+			description = #{description},
+			discount = #{discount},
+			old_price = #{oldPrice},
+			current_price = #{currentPrice},
+			score = #{score},
+			status = #{status},
+			sale_count = #{saleCount},
+			logo = #{logo},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag = #{delFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insert">
+		INSERT INTO combo_info (
+			id, 
+			name ,
+			number ,
+			sort ,
+			title ,
+			content,
+			description,
+			discount,
+			old_price ,
+			current_price,
+			score ,
+			status ,
+			sale_count,
+			logo ,
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{name},
+			#{number},
+			#{sort},
+			#{title},
+			#{content},
+			#{description},
+			#{discount},
+			#{oldPrice},
+			#{currentPrice},
+			#{score},
+			#{status},
+			#{saleCount},
+			#{logo},
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate},  
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="delete">
+		UPDATE combo_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="get" resultMap="baseMap">
+		SELECT 
+			t.id,
+			t.name,
+			t.number,
+			t.sort,
+			t.title,
+			t.content,
+			t.description,
+			t.old_price,
+			t.current_price,
+			t.status,
+			t.sale_count,
+			t.logo
+		FROM combo_info t
+		WHERE t.id = #{id}
+	</select>
+	
+	<!-- 删除套餐相关图片 -->
+	<update id="deleteComboImages">
+		DELETE FROM combo_image
+		WHERE combo_id=#{comboId}
+	</update>
+	<!-- 删除合同相关图片 -->
+	<update id="deleteComboContracts">
+		DELETE FROM combo_contract
+		WHERE combo_id=#{comboId}
+	</update>
+	
+	<!-- <insert id="insertComboImage">
+		INSERT INTO combo_image (
+			id,
+			combo_id,
+			image,
+			create_by,
+			create_date,
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES 
+		<foreach collection="images" item="image" separator="," index="index">
+			(
+				#{image.id},
+				#{image.comboId},
+				#{image.image},
+				#{image.createBy.id},
+				#{image.createDate},
+				#{image.updateBy.id},
+				#{image.updateDate},
+				#{image.delFlag}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insertComboContract">
+		INSERT INTO combo_contract (
+			id,
+			combo_id,
+			contract,
+			create_by,
+			create_date,
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES 
+		<foreach collection="images" item="contract" separator="," index="index">
+			(
+				#{contract.id},
+				#{contract.comboId},
+				#{contract.contract},
+				#{contract.createBy.id},
+				#{contract.createDate},
+				#{contract.updateBy.id},
+				#{contract.updateDate},
+				#{contract.delFlag}
+			)
+		</foreach>
+	</insert> -->
+	<insert id="insertComboImage" parameterType="java.util.List">
+		INSERT INTO combo_image (
+			id,
+			combo_id,
+			image,
+			create_by,
+			create_date,
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES 
+		<foreach collection="list" item="image" separator="," >
+			(
+				#{image.id},
+				#{image.comboId},
+				#{image.image},
+				#{image.createBy.id},
+				#{image.createDate},
+				#{image.updateBy.id},
+				#{image.updateDate},
+				#{image.delFlag}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insertComboContract" parameterType="java.util.List">
+		INSERT INTO combo_contract (
+			id,
+			combo_id,
+			contract,
+			create_by,
+			create_date,
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES 
+		<foreach collection="list" item="contract" separator="," >
+			(
+				#{contract.id},
+				#{contract.comboId},
+				#{contract.contract},
+				#{contract.createBy.id},
+				#{contract.createDate},
+				#{contract.updateBy.id},
+				#{contract.updateDate},
+				#{contract.delFlag}
+			)
+		</foreach>
+	</insert>
+
+	<resultMap id="comboMap" type="Combo" extends="baseMap">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="number" column="number"/>
+		<result property="sort" column="sort"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="description" column="description"/>
+		<result property="discount" column="discount" />
+		<result property="oldPrice" column="old_price" />
+		<result property="currentPrice" column="current_price" />
+		<result property="score" column="score" />
+		<result property="status" column="status" />
+		<result property="saleCount" column="sale_count" />
+		<result property="logo" column="logo" />
+		
+		<collection property="images" javaType="java.util.List" ofType="ComboImage" >
+			<id property="id" column="id"/>
+			<result property="comboId" column="combo_id"/>
+			<result property="image" column="image"/>
+		</collection>
+		
+	</resultMap>
+	
+	<!-- 获取所有形象大使信息 -->
+	<select id="getComboList" resultMap="comboMap" >
+		SELECT
+			t.id, 
+			t.name, 
+			t.number, 
+			t.sort, 
+			t.title, 
+			t.content, 
+			t.description, 
+			t.discount, 
+			t.old_price, 
+			t.current_price, 
+			t.score, 
+			t.status, 
+			t.sale_count, 
+			t.logo, 
+			i.id, 
+			i.combo_id, 
+			i.image 
+		FROM combo_info t 
+		LEFT OUTER JOIN combo_image i 
+		ON t.id = i.combo_id 
+		order by t.sort
+	</select>
+	
+	<!-- 获取套餐详细信息 -->
+	<select id="getComboById" parameterType="string" resultMap="baseMap" >
+		SELECT
+			t.id, 
+			t.name, 
+			t.number, 
+			t.sort, 
+			t.title, 
+			t.content, 
+			t.description, 
+			t.discount, 
+			t.old_price, 
+			t.current_price, 
+			t.score, 
+			t.status, 
+			t.sale_count, 
+			t.logo
+		FROM combo_info t 
+		WHERE 
+			t.del_flag = '0' and t.status = '1' and t.id = #{id}
+	</select>
+	
+	<!-- 获取套餐合同详情 -->
+	<select id="getComboContractsByComboId" parameterType="string" resultType="ComboContract" >
+		SELECT 
+			id, 
+			combo_id as comboId, 
+			sort, 
+			contract
+		FROM combo_contract 
+		WHERE combo_id = #{comboId}
+	</select>
+	<!-- 获取套餐滚动图详情 -->
+	<select id="getComboImagesByComboId" parameterType="string" resultType="ComboImage" >
+		SELECT 
+			id, 
+			combo_id as comboId, 
+			sort, 
+			image
+		FROM combo_image 
+		WHERE combo_id = #{comboId}
+	</select>
+	
+	<!-- 套餐购买次数+1 -->
+	<update id="count" >
+		UPDATE 
+			combo_info 
+		SET
+			sale_count = sale_count + 1,
+			update_date = NOW(),
+			update_by = #{updateBy.id}
+		WHERE
+			id = #{id}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+</mapper>

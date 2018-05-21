@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.WItemDao">
+
+	<select id="getItemMaxCurrentPrice" resultType="java.math.BigDecimal" parameterType="string">
+		SELECT MAX(deal_price) as currentMax
+		FROM all_order_info
+		WHERE del_flag = '0' and goods_type = '2' and goods_id = #{itemId}
+	</select>
+	
+	<select id="getItemMinCurrentPrice" resultType="java.math.BigDecimal" parameterType="string">
+		SELECT MIN(deal_price) as currentMin
+		FROM all_order_info
+		WHERE del_flag = '0' and goods_type = '2' and goods_id = #{itemId}
+	</select>
+	
+	<select id="getItemMaxOldPrice" resultType="java.math.BigDecimal" parameterType="string">
+		SELECT MAX(order_price) as oldMax
+		FROM all_order_info
+		WHERE del_flag = '0' and goods_type = '2' and goods_id = #{itemId}
+	</select>
+	
+	<select id="getItemMinOldPrice" resultType="java.math.BigDecimal" parameterType="string">
+		SELECT MIN(order_price) as oldMin
+		FROM all_order_info
+		WHERE del_flag = '0' and goods_type = '2' and goods_id = #{itemId}
+	</select>
+
+	<!-- 通过项目id获取项目滚动图 -->
+	<select id="getItemImages" parameterType="string" resultType="WItemImage">
+		SELECT 
+			id,
+			item_id as itemId,
+			item_image as itemImage
+		FROM item_image
+		WHERE item_id = #{id}
+	</select>
+
+	<!-- 项目销售次数+1 -->
+	<update id="addCount">
+		UPDATE item_info 
+		SET sale_count = sale_count + 1
+		WHERE id = #{id}
+	</update>
+
+	<resultMap id="wItemMap" type="WItem">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="number" column="number" />
+		<result property="sort" column="sort" />
+		<result property="title" column="title" />
+		<result property="type" column="type"/>
+		<result property="shopId" column="shop_id"/>
+		<result property="content" column="content" />
+		<result property="description" column="description" />
+		<result property="oldPrice" column="old_price" />
+		<result property="currentPrice" column="current_price" />
+		<result property="status" column="status" />
+		<result property="saleCount" column="sale_count" />
+		<result property="logo" column="logo" />
+		<result property="oldMin" column="old_min" />
+		<result property="oldMax" column="old_max" />
+		<result property="currentMin" column="current_min" />
+		<result property="currentMax" column="current_max" />
+	</resultMap>
+	<sql id="allColumns">
+			t.id,
+			t.name,
+			t.number,
+			t.sort,
+			t.title,
+			t.type,
+			t.shop_id,
+			t.content,
+			t.description,
+			t.old_price,
+			t.old_min,
+			t.old_max,
+			t.current_price,
+			t.current_min,
+			t.current_max,
+			t.status,
+			t.sale_count,
+			t.logo
+	</sql>
+	
+	<!-- 分页查询项目信息 -->
+	<select id="getItemByPage" resultMap="wItemMap" >
+		SELECT 
+			<include refid="allColumns"></include>
+		FROM item_info t 
+		WHERE 
+			t.del_flag = '0' and t.status = '1'
+		ORDER BY t.sort 
+		LIMIT #{page}, #{size}
+	</select>
+	
+	<!-- 查询项目详情 -->
+	<select id="getItemById" parameterType="string" resultMap="wItemMap">
+		SELECT 
+			<include refid="allColumns"></include>
+		FROM item_info t 
+		WHERE 
+			t.del_flag = '0' and t.status = '1' and t.id = #{id}
+	</select>
+	
+	<!-- 根据分类获取项目 -->
+	<select id="getItemByType" parameterType="string" resultMap="wItemMap">
+		SELECT
+			<include refid="allColumns" />
+		FROM item_info t 
+		WHERE t.del_flag = '0' and t.type = #{type}
+	</select>
+	
+	<!-- 根据分类获分页取项目 -->
+	<select id="getItemByTypeByPage" resultMap="wItemMap">
+		SELECT
+			<include refid="allColumns" />
+		FROM item_info t 
+		WHERE t.del_flag = '0' and t.type = #{type}
+		LIMIT #{n},#{s}
+	</select>
+	
+	<!-- 获取项目有哪些类型 -->
+	<select id="getItemTypes" resultType="string">
+		SELECT DISTINCT type FROM item_info WHERE del_flag = '0'
+	</select>
+	
+</mapper>

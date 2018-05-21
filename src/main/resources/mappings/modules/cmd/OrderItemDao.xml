@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cmd.dao.OrderItemDao">
+
+	<select id="getRewardByOrderId" resultType="Reward">
+		SELECT 
+			id ,
+			order_id ,
+			reward_type ,
+			user_id ,
+			user_reward ,
+			user_star
+		FROM reward_relation
+		WHERE order_id =#{orderId}
+	</select>
+
+	<update id="update">
+		UPDATE all_order_info SET 
+			pay_state = ${payState},
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate},
+			del_flag = #{delFlag}
+		WHERE id = #{id}
+	</update>
+
+	<update id="text">
+		UPDATE all_order_info SET 
+			text = #{text}
+		WHERE id = #{id}
+	</update>
+
+	<select id="get" resultType="OrderItem">
+		SELECT
+			id,
+			text,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			goods_name as goodsName,
+			pay_state as payState,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+			create_by as "createBy.id",
+			create_date as createDate,
+			update_by as "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM all_order_info
+		WHERE id = #{id}
+	</select>
+
+	<!-- 根据订单号获取项目名 -->
+	<select id="getNameByoutTradeId" parameterType="string" resultType="string">
+		SELECT c.name 
+		FROM item_info c, all_order_info a
+		WHERE c.id = a.goods_id AND a.id = #{outTradeId}
+	</select>
+	
+	<select id="getNameId" parameterType="string" resultType="string">
+		SELECT id 
+		FROM combo_info 
+		WHERE name LIKE CONCAT('%', #{orderName}, '%')
+	</select>
+	
+	<select id="findList" resultType="OrderItem">
+		SELECT
+			id,
+			text,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			goods_name as goodsName,
+			pay_state as payState,
+			deal_price as dealPrice,
+			check_state as checkState,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+			create_by as "createBy.id",
+			create_date as createDate,
+			update_by as "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM 
+			all_order_info
+		WHERE
+			goods_type = '2' and del_flag='0'
+		<if test="payState != null and payState != ''">
+			AND pay_state = #{payState}
+		</if>
+		<if test="goodsName != null and goodsName != ''">
+			AND goods_name like CONCAT('%', #{goodsName}, '%')
+		</if>
+		order by create_date desc
+	</select>
+	
+
+	<!-- 修改向上返点及消耗的积分余额 -->
+	<update id="afterPayChange">
+		UPDATE all_order_info 
+		<set>
+			<if test="score != null">charge_score = #{score},</if>
+			<if test="balance != null">charge_balance = #{balance},</if>
+		</set>
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 检查是否购买过任意商品（购买则有订单） -->
+	<select id="hasOrder" parameterType="string" resultType="java.lang.Integer">
+		select 1 from all_order_info 
+		where buy_id = #{userId} 
+	</select>
+
+	<!-- 检查是否购买过套餐 -->
+	<select id="hasCombo" parameterType="string" resultType="java.lang.Integer">
+		select 1 from all_order_info 
+		where buy_id = #{userId} and goods_type = '1'
+	</select>
+
+	<!-- 订单表插入 -->
+	<insert id="insertOrder" parameterType="OrderCombo">
+		INSERT INTO all_order_info (
+			id,
+			buy_id,
+			goods_id,
+			goods_type,
+			pay_state ,
+			deal_price ,
+			change_price_id ,
+			change_price_date ,
+			charge_score ,
+			charge_balance,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag
+		) VALUES (
+			#{id},
+			#{buyId},
+			#{goodsId},
+			#{goodsType},
+			#{payState},
+			#{dealPrice},
+			#{changePriceId},
+			#{changePriceDate},
+			#{chargeScore},
+			#{chargeBalance},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<!-- 改支付状态 -->
+	<update id="changePayState">
+		UPDATE
+			all_order_info 
+		SET 
+			pay_state = #{state},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+
+	<!-- 根据改价人id、订单号改成交价 -->
+	<update id="changeDealPrice">
+		UPDATE
+			all_order_info 
+		SET 
+			deal_price = #{price},
+			change_price_id = #{changePriceId},
+			change_price_date = NOW(),
+			update_date = NOW()
+		WHERE 
+			id = #{outTradeId}
+	</update>
+	
+	<!-- 查询可改价订单 -->
+	<select id="canBeChangeOrder" resultType="OrderCombo">
+		SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			pay_state as payState,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+		FROM all_order_info
+		WHERE 
+			pay_state = '0'
+	</select>
+
+	<!-- 根据订单号查询订单 -->
+	<select id="getOrderByOutTradeId" parameterType="string" resultType="OrderCombo">
+		SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			pay_state as payState,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+		FROM all_order_info
+		WHERE id = #{outTradeId}
+	</select>
+
+	<!-- 根据用户id查订单 -->
+	<select id="getOrdersByUserId" parameterType="string" resultType="OrderCombo">
+		SELECT
+			id,
+			buy_id as buyId,
+			goods_id as goodsId,
+			goods_type as goodsType,
+			pay_state as payState,
+			deal_price as dealPrice,
+			change_price_id as changePriceId,
+			change_price_date as changePriceDate,
+			charge_score as chargeScore,
+			charge_balance as chargeBalance,
+		FROM all_order_info
+		WHERE buy_id = #{userId}
+	</select>
+	
+	<delete id="deleteOrderById" parameterType="string">
+		DELETE
+		FROM all_order_info
+		WHERE id = #{id}
+	</delete>
+	
+</mapper>

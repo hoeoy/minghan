@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AMGoodsTypeDao">
+    <resultMap type="AMGoodsType" id="amgoodsType">
+		<id property="id" column="id"/>
+		<result property="typeName" column="type_name"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	<sql id="allColumn">
+		id,
+		type_name,
+    	create_by,
+    	create_date,
+    	update_by,
+    	update_date,
+    	del_flag
+	</sql>
+	
+	<!-- 获取全部项目类型 -->
+	<select id="getAllGoodsType" resultMap="amgoodsType">
+		SELECT
+		<include refid="allColumn"/>
+		FROM m_goods_type_info
+		WHERE del_flag = '0' AND id != '1'
+	</select>
+	
+	<select id="get" resultMap="amgoodsType">
+		SELECT
+		<include refid="allColumn"/>
+		FROM m_goods_type_info
+		WHERE del_flag = '0' AND id = #{id}
+	</select>
+	
+	
+	
+</mapper>

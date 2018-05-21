@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.UserDao">
+	
+	<resultMap id="userResult" type="User">
+		<id property="id" column="id" />
+		<result property="loginName" column="login_name" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<!-- <result property="email" column="email" />
+		<result property="phone" column="phone" /> -->
+		<result property="mobile" column="mobile" />
+		<result property="userType" column="user_type" />
+		<result property="userLevel" column="user_level"/>
+		<!-- <result property="loginIp" column="login_ip" />
+		<result property="loginDate" column="login_date" /> -->
+		<result property="remarks" column="remarks" />
+		<result property="loginFlag" column="loginFlag" />
+		<result property="photo" column="photo" />
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<!-- <result property="sign" column="sign" /> -->
+		<result property="minPhoto" column="min_photo" />
+		<result property="openId" column="open_id" />
+		<result property="point" column="point" />
+		<result property="delFlag" column="del_flag" />
+		<result property="birthday" column="birthday"/>
+		<result property="card" column="card"/>
+		<result property="mail" column="mail"/>
+		<result property="province" column="province"/>
+		<result property="city" column="city"/>
+		<result property="zone" column="zone"/>
+		<result property="addr" column="addr"/>
+		<result property="bankType"  column="bank_type"/>
+		<result property="bankCard" column="bank_card"/>
+		<result property="accountMoney" column="account_money"/>
+		<result property="rewardMoney" column="reward_money"/>
+		<result property="backMoney" column="back_money"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="startFlag"  column="start_flag"/>
+		<result property="userAmbassador"  column="user_ambassador"/>
+		<collection property="roleList" ofType="Role">
+			<id property="id" column="roleList.id" />
+			<!-- <result property="office.id" column="roleList.office.id" /> -->
+			<result property="name" column="roleList.name" />
+			<result property="enname" column="roleList.enname" />
+			<result property="roleType" column="roleList.roleType" />
+			<result property="dataScope" column="roleList.dataScope" />
+		</collection>
+	</resultMap>
+	
+    <sql id="userColumns">
+    	a.id,
+    	a.login_name,
+    	a.password,
+		a.name,
+		a.mobile,
+		a.birthday,
+		a.user_type,
+		a.user_level,
+		a.card,
+		a.mail,
+		a.province,
+		a.city,
+		a.zone,
+		a.addr,
+		a.bank_type,
+		a.bank_card,
+		a.account_money,
+		a.reward_money,
+		a.back_money,
+		a.remarks,
+		a.login_flag,
+		a.photo,
+		a.min_photo,
+		a.point,
+		a.open_id,
+		a.parent_id,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.start_flag,
+		a.user_ambassador,
+        r.id AS "roleList.id",
+        r.name AS "roleList.name",
+        r.enname AS "roleList.enname",
+        r.role_type AS "roleList.roleType",
+        r.data_scope AS "roleList.dataScope"
+    </sql>
+    
+    <!-- 根据登录账户名获取用户 -->
+    <select id="getUserByUsername" parameterType="string" resultType="User">
+    	SELECT 
+    		a.id,
+    	a.login_name,
+    	a.password,
+		a.name,
+		a.mobile,
+		a.birthday,
+		a.user_type,
+		a.user_level,
+		a.card,
+		a.mail,
+		a.province,
+		a.city,
+		a.zone,
+		a.addr,
+		a.bank_type,
+		a.bank_card,
+		a.account_money,
+		a.reward_money,
+		a.back_money,
+		a.remarks,
+		a.login_flag,
+		a.photo,
+		a.min_photo,
+		a.point,
+		a.open_id,
+		a.parent_id,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.start_flag,
+		a.user_ambassador
+    	FROM sys_user a
+    	WHERE a.login_name = #{username} AND a.del_flag = '0'
+    </select>
+    
+    <sql id="userJoins">
+        LEFT JOIN (select sr.id,sr.name,sr.enname,sr.role_type,sr.data_scope,ur.user_id from sys_role sr left join sys_user_role ur ON sr.id = ur.role_id ) r ON r.user_id = a.id
+    </sql>
+	
+	<!-- 根据编号获得用户 -->
+	<select id="get" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!-- 根据登录名查询用户 -->
+	<select id="getByLoginName" resultMap="userResult" parameterType="User">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.login_name = #{loginName} AND a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		<if test="role != null and role.id != null and role.id != ''">
+			JOIN sys_user_role sur ON sur.user_id = a.id AND sur.role_id = #{role.id}
+		</if>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.user_type !='1'
+		<if test="startFlag!=null and startFlag !='' ">
+		AND a.start_flag = #{startFlag}
+		</if>
+		<!-- 如果不是超级管理员，则不显示超级管理员用户 -->
+		<if test="!currentUser.admin">
+			AND a.id != '1'
+		</if>
+		<if test="loginName != null and loginName != ''">
+			AND a.login_name like CONCAT('%', #{loginName}, '%')
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name like CONCAT('%', #{name}, '%')
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND a.mobile like CONCAT('', #{mobile}, '%')
+		</if>
+		<if test="userType !=null and userType !=''">
+			AND a.user_type =#{userType}
+		</if>
+		<if test="userLevel !=null and userLevel !=''">
+			AND a.user_level =#{userLevel}
+		</if>
+		<if test="userAmbassador !=null and userAmbassador !=''">
+			AND a.user_ambassador =#{userAmbassador}
+		</if>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY  a.create_date desc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 根据OfficeId获取用户（树查询用户时用） -->
+	<!-- <select id="findUserByOfficeId" resultType="User" useCache="true">
+		SELECT
+			a.id, a.name, a.login_name
+		FROM sys_user a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+			AND a.office_id = #{office.id}
+		ORDER BY a.name
+	</select> -->
+	
+	<!-- 查询全部用户 -->
+	<select id="findAllList" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY <!-- c.code, o.code, --> a.name
+	</select>
+	
+	<!-- 查询全部用户数目 -->
+	<select id="findAllCount" resultType="long">
+		SELECT
+			COUNT(1)
+		FROM sys_user a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	
+	<!-- 插入用户 -->
+	<insert id="insert">
+		INSERT INTO sys_user(
+			id, 
+			birthday,
+			<!-- company_id, 
+			office_id,  -->
+			login_name, 
+			password, 
+			<!-- no,  -->
+			name, 
+<!-- 			email, 
+			phone, --> 
+			mobile, 
+			user_type,
+			user_level,
+			card,
+			mail,
+			province,
+			city,
+			zone,
+			addr,
+			bank_type,
+			bank_card,
+			account_money,
+			reward_money,
+			back_money,
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			login_flag, 
+			photo, 
+			min_photo, 
+			point, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			<!-- #{company.id}, 
+			#{office.id},  -->
+			#{birthday},
+			#{loginName}, 
+			#{password}, 
+			<!-- #{no},  -->
+			#{name}, 
+			<!-- #{email}, 
+			#{phone}, --> 
+			#{mobile}, 
+			#{userType}, 
+			#{userLevel},
+			#{card},
+			#{mail},
+			#{province},
+			#{city},
+			#{zone},
+			#{addr},
+			#{bankType},
+			#{bankCard},
+			#{accountMoney},
+			#{rewardMoney},
+			#{backMoney},
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{remarks}, 
+			#{loginFlag}, 
+			#{photo}, 
+			#{minPhoto}, 
+			#{point}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<!-- 根据user id修改余额 -->
+	<update id="updateUserAccountMoney">
+		UPDATE sys_user
+		SET account_money = #{accountMoney}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateForeach">
+		<foreach collection="map" index="key" item="user">
+		UPDATE sys_user
+		SET
+			reward_money = #{user.rewardMoney}
+		WHERE 
+			id = #{user.id}
+		</foreach>
+	</update>
+	
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE sys_user SET 
+		<if test="loginName !=null and loginName !=''">
+			login_name = #{loginName}, 
+			</if>
+			<if test="password !=null and password !=''">
+			password = #{password}, 
+			</if>
+			<if test="birthday !=null and birthday !=''">
+			birthday = #{birthday},
+			</if>
+			<if test="mobile !=null and mobile !=''">
+			mobile = #{mobile}, 
+			</if>
+			<if test="userType !=null and userType !=''">
+			user_type = #{userType}, 
+			</if>
+			<if test="userLevel !=null and userLevel !=''">
+			user_level=#{userLevel},
+			</if>
+			<if test="card !=null and card !=''">
+			card=#{card},
+			</if>
+			<if test="mail !=null and mail !=''">
+			mail=#{mail},
+			</if>
+			<if test="province !=null and province !=''">
+			province=#{province},
+			</if>
+			<if test="city !=null and city !=''">
+			city=#{city},
+			</if>
+			<if test="zone !=null and zone !=''">
+			zone=#{zone},
+			</if>
+			<if test="addr !=null and addr !=''">
+			addr=#{addr},
+			</if>
+			<if test="bankType !=null and bankType !=''">
+			bank_type=#{bankType},
+			</if>
+			<if test="bankCard !=null and bankCard !=''">
+			bank_card=#{bankCard},
+			</if>
+			<if test="updateDate !=null and updateDate !=''">
+			update_date = #{updateDate}, 
+			</if>
+			<if test="remarks !=null and remarks !=''">
+			remarks = #{remarks},
+			</if>
+			<if test="loginFlag !=null and loginFlag !=''">
+			login_flag = #{loginFlag},
+			</if>
+			<if test="photo !=null and photo !=''">
+			photo = #{photo},
+			</if>
+			<if test="minPhoto !=null and minPhoto !=''">
+			min_photo = #{minPhoto},
+			</if>
+			<if test="accountMoney !=null and accountMoney !=''">
+			account_money=#{accountMoney},
+			</if>
+			<if test="rewardMoney !=null and rewardMoney != ''">
+			reward_money=#{rewardMoney},
+			</if>
+			<if test="userAmbassador != null and userAmbassador !=''">
+			user_ambassador = #{userAmbassador},
+			</if>
+			name = #{name}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 删除用户和角色关联表数据 -->
+	<delete id="deleteUserRole">
+		DELETE FROM sys_user_role WHERE user_id = #{id}
+	</delete>
+	
+	<!-- 插入用户和角色关联表数据 -->
+	<insert id="insertUserRole">
+		INSERT INTO sys_user_role(user_id, role_id)
+		<foreach collection="roleList" item="role" separator=" union all ">
+			SELECT #{id}, #{role.id}
+			<if test="dbName != 'mssql'">
+			FROM dual
+			</if>
+		</foreach>
+	</insert>
+	
+	<!-- 更新用户信息  -->
+	<update id="updateUserInfo">
+		UPDATE sys_user SET 
+		<!-- 	email = #{email}, 
+			phone = #{phone}, --> 
+			mobile = #{mobile}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			remarks = #{remarks},
+			min_photo = #{minPhoto},
+			photo = #{photo}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 更新用户密码 -->
+	<update id="updatePasswordById">
+		UPDATE sys_user SET 
+			password = #{password} 
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 更新登录信息，如登录IP、登录时间 -->
+	<!-- <update id="updateLoginInfo">
+		UPDATE sys_user SET 
+			login_ip = #{loginIp}, 
+			login_Date = #{loginDate} 
+		WHERE id = #{id}
+	</update> -->
+	
+	<!-- 逻辑删除用户 -->
+	<update id="delete">
+		UPDATE sys_user SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getBalanceById" parameterType="String" resultType="com.thinkgem.jeesite.modules.sys.entity.Balance">
+	select * from sys_balance where user_id=#{user_id} and ind_flag='1'
+</select>
+
+<update id="offUser" parameterType="String" >
+	update sys_user set start_flag = '1' where id = #{id}
+</update>
+
+<update id="startUser" parameterType="String" >
+	update sys_user set start_flag = '0' where id = #{id}
+</update>
+	
+	<select id="getSix" resultType="com.thinkgem.jeesite.modules.sys.entity.Role" parameterType="String">
+		select * from sys_role where id = '6'
+	</select>
+	
+	<update id="updateParentId">
+		update sys_user set parent_id = #{parentId} where id = #{id}
+	</update>
+	
+	<select id="getYWY"  resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE user_type = '2'
+		AND start_flag = '0'
+	</select>
+	
+	<select id="findUserByName"  resultMap="userResult">
+	SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		<include refid="userJoins"/>
+		WHERE a.name like CONCAT('%', #{name}, '%')
+		AND start_flag = '0'
+	</select>
+	
+	<update id="updateAccountMoney">
+		UPDATE sys_user SET
+		account_money=#{accountMoney}
+		WHERE id = #{id}
+	</update>
+	<update id="updateRewardMoney">
+		UPDATE sys_user SET
+		reward_money=#{rewardMoney}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getNameById" parameterType="String" resultType="String">
+		SELECT name FROM sys_user WHERE id = #{id}
+	</select>
+	
+</mapper>

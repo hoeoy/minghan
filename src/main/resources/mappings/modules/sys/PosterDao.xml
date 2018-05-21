@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.PosterDao">
+	
+	<resultMap id="posterResult" type="Poster">
+		<id property="id" column="id" />
+		<result property="path" column="path"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+    <sql id="posterColumns">
+    	a.id,
+    	a.path
+        </sql>
+    
+    <select id="get" resultMap="posterResult">
+    	SELECT
+    		<include refid="posterColumns"/>
+    	FROM poster a WHERE id = #{id}
+    </select>
+    
+    <update id="update">
+    	UPDATE poster SET 
+    	path = #{path},
+    	update_by = #{updateBy.id}, 
+		update_date = #{updateDate}
+		WHERE id = #{id}
+    </update>
+    
+    <select id="findList" resultMap="posterResult">
+    	SELECT 
+    	<include refid="posterColumns"/>
+    	FROM poster a 
+    </select>
+	
+</mapper>

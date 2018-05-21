@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>天气</title>
+	<meta http-equiv="Pragma" content="no-cache"> 
+	<meta http-equiv="Cache-Control" content="no-cache"> 
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=0.7,minimum-scale=0.7,maximum-scale=0.7,user-scalable=no">
+	<style type="text/css">
+		.wea-more{
+			display: none;
+		}
+		.frameCss{
+			overflow:hidden;
+			margin:-12px 0px;
+			height:75px;
+			background-color: #fff;
+			pointer-events:none;
+		}
+		.scroll-wrapper { 
+		  -webkit-overflow-scrolling: touch; 
+		  overflow:hidden;
+		  height:63px;
+		  width:91px;
+		  font-size:1.2em; 
+		  /* 提示: 请在此处加上需要设置的大小(dimensions)或位置(positioning)信息! */ 
+		}
+	</style>
+  </head>
+  
+  <body style="overflow:hidden;width:91px;margin:0px;">
+    <div class="scroll-wrapper"> 
+    	<iframe class="frameCss"  name="weatherFrame" allowtransparency="true" frameborder="0" width="100" height="96" scrolling="no" src="//tianqi.2345.com/plugin/widget/index.htm?s=1&z=1&t=0&v=0&d=1&bd=0&k=&f=&q=1&e=0&a=1&c=54511&w=100&h=96&align=right"></iframe>
+  	</div>
+  </body>
+</html>

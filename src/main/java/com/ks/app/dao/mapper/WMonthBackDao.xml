@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.WMonthBackDao">
+
+<resultMap type="WMonthBack" id="WMonthBackMap">
+	<result property="id" column="id"/>
+	<result property="userId" column="user_id"/>
+	<result property="orderId" column="order_id"/>
+	<result property="comboId" column="combo_id"/>
+	<result property="stage" column="stage"/>
+	<result property="money" column="money"/>
+	<result property="state" column="state"/>
+	<result property="startTime" column="start_time"/>
+	<result property="autoTime" column="auto_time"/>
+	<result property="type" column="type"/>
+	<result property="auditFlag" column="audit_flag"/>
+</resultMap>
+
+ <sql id="wMonthBackColumns">
+ a.id,
+ a.user_id,
+ a.order_id,
+ a.combo_id,
+ a.stage,
+ a.money,
+ a.state,
+ a.start_time,
+ a.auto_time,
+ a.type,
+ a.audit_flag
+ </sql>
+
+<select id="get" resultMap="WMonthBackMap">
+	SELECT
+	<include refid="wMonthBackColumns"/>
+	FROM month_back_info a
+	WHERE a.id=#{id}
+</select>
+
+	<select id="getEntityById" resultMap="WMonthBackMap">
+		SELECT
+	<include refid="wMonthBackColumns"/>
+		FROM month_back_info a
+		WHERE a.id=#{backMonthId}
+	</select>
+
+	<update id="update">
+		UPDATE month_back_info SET 
+		user_id=#{userId},
+		order_id=#{orderId},
+		combo_id=#{comboId},
+		stage=#{stage},
+		money=#{money},
+		state=#{state},
+		start_time=#{startTime},
+		auto_time=#{autoTime},
+		type=#{type},
+		audit_flag=#{auditFlag}
+		WHERE id = #{id}
+</update>
+
+	<insert id="insertMonthBack" parameterType="WMonthBack">
+		INSERT INTO month_back_info (
+			id,
+			user_id,
+			order_id,
+			combo_id,
+			stage,
+			money,
+			state,
+			start_time ,
+			auto_time ,
+			type,
+			audit_flag ,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag
+		) VALUES (
+			#{id},
+			#{userId},
+			#{orderId},
+			#{comboId},
+			#{stage},
+			#{money},
+			#{state},
+			#{startTime},
+			#{autoTime},
+			#{type},
+			#{auditFlag },
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+		</insert>
+
+
+	<!-- 获取全部返现信息 -->
+	<select id="getListById" resultType="WMonthBack">
+		SELECT
+			id,
+			user_id as userId,
+			order_id as orderId,
+			combo_id as comboId,
+			stage,
+			money,
+			state,
+			audit_flag as auditFlag,
+			start_time as startTime,
+			auto_time as autoTime,
+			type,
+			audit_flag as auditFlag,
+			create_by as createBy,
+			create_date as createDate,
+			update_by as updateBy,
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM month_back_info
+		WHERE user_id = #{userId}
+		ORDER BY start_time ASC
+	</select>
+	
+	<!-- 根据month_back_info主键id修改audit_flag -->
+	<update id="changeAuditFlag">
+		UPDATE month_back_info 
+		SET 
+		audit_flag = '2',
+		update_date = NOW()
+		WHERE id = #{id} and del_flag = '0'
+	</update>
+	
+	<select id="getNameById" resultType="String" parameterType="String">
+		SELECT name FROM combo_info WHERE id = #{id}
+	</select>
+	
+</mapper>

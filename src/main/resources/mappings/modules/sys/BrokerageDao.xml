@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.BrokerageDao">
+
+	<select id="findList" resultType="com.thinkgem.jeesite.modules.sys.entity.Brokerage">
+		SELECT 
+			id ,
+			money ,
+			user_id as userId,
+			status ,
+			order_id as orderId,
+			order_type as orderType,
+			create_by AS "createBy.id",
+			create_date as createDate,
+			update_by AS "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM brokerage_info
+		WHERE del_flag = '0'
+		<if test="fromUserName != null and fromUserName != ''">
+		AND order_id IN (
+			SELECT id FROM all_order_info WHERE buy_id IN
+				(SELECT id FROM sys_user WHERE name like CONCAT('%', #{fromUserName}, '%'))
+		)
+		</if>
+		<if test="userId!=null and userId!=''">
+		 AND user_id in (SELECT id FROM sys_user WHERE name like CONCAT('%', #{userId}, '%'))
+		 </if>
+		 <if test="startTime!=null and startTime!=''" >
+		AND  create_date BETWEEN #{startTime} AND NOW()
+		 </if>
+		 <if test="endTime!=null and endTime!=''">
+		 AND create_date &lt; #{endTime}
+		 </if>
+		ORDER BY update_date DESC
+	</select>
+	
+	<delete id="deleteBrokerage" parameterType="string">
+		DELETE
+		FROM brokerage_info
+		WHERE id = #{id}
+	</delete>
+	
+	<delete id="deleteBrokerageForeach" parameterType="string">
+		DELETE
+		FROM brokerage_info
+		WHERE id IN(
+		<foreach collection="list" item="id" separator=",">
+			#{id}
+		</foreach>
+		)
+	</delete>
+	
+	<!-- <resultMap type="com.thinkgem.jeesite.modules.sys.entity.Brokerage" id="brokerageMap">
+		<id property="id" column="id"/>
+		<result property="money" column="money"/>
+		<result property="userId" column="user_id"/>
+		<result property="status" column="status"/>
+		<result property="orderId" column="order_id"/>
+		<result property="orderType" column="order_type"/>
+	</resultMap> -->
+	<select id="get" parameterType="Brokerage" resultType="Brokerage">
+		SELECT
+			id ,
+			money ,
+			status ,
+			user_id AS userId,
+			order_id AS orderId,
+			order_type AS orderType,
+			create_by AS "createBy.id",
+			create_date AS createDate,
+			update_by AS "updateBy.id",
+			update_date AS updateDate,
+			del_flag AS delFlag
+		FROM brokerage_info
+		WHERE del_flag = '0'
+			<!-- AND order_id = ${orderId}
+			AND order_type = ${orderType}
+			AND user_id = ${userId} -->
+		<if test="orderId !=null and orderId !=''">
+		AND order_id = #{orderId}
+		</if>
+		<if test="orderType !=null and orderType !=''">
+		AND order_type = #{orderType}
+		</if>
+		<if test="userId !=null and userId !=''">
+		AND user_id = #{userId}
+		</if>
+	</select>
+	
+</mapper>

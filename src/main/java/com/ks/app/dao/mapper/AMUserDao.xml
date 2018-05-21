@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AMUserDao">
+	
+	<resultMap id="muserResult" type="AMUser">
+		<id property="id" column="id" />
+		<result property="userId" column="user_id"/>
+		<result property="mRewardMoney" column="m_reward_money"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="mUserLevel" column="m_user_level"/>
+		<result property="flag" column="flag"/>
+		<result property="discountsNum" column="discounts_num"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+    <sql id="muserSQL">
+    	a.id,
+		a.m_user_level,
+		a.m_reward_money,
+		a.parent_id,
+		a.flag,
+		a.user_id,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.discounts_num,
+		a.del_flag
+    </sql>
+    
+    <select id="getMuserByUserId" parameterType="String" resultMap="muserResult">
+    	SELECT 
+    	<include refid="muserSQL"/>
+    	FROM m_user a WHERE user_id = #{userId} AND del_flag = '0'
+    </select>
+    
+    <select id="getByParentId" parameterType="String" resultMap="muserResult">
+   		 SELECT 
+    	<include refid="muserSQL"/>
+    	FROM m_user a WHERE parent_id = #{parentId} AND del_flag = '0'
+    </select>
+    
+    <select id="get" resultMap="muserResult">
+    	SELECT 
+    	<include refid="muserSQL"/>
+    	FROM m_user a WHERE id = #{id} AND del_flag = '0'
+    </select>
+    
+    <update id="allterRM">
+    	UPDATE m_user SET 
+    	m_reward_money = #{mRewardMoney}
+    	WHERE id=#{id}
+    </update>
+    
+    <insert id="insert">
+    	INSERT INTO m_user (
+    	id,
+    	user_id,
+    	create_date
+    	)VALUES(
+    	#{id},
+    	#{userId},
+    	#{createDate}
+    	)
+    </insert>
+    <update id="buyZiGeSucceed" parameterType="String">
+    	UPDATE m_user SET
+    	flag = '1'
+    	WHERE id = #{userId}
+    </update>
+    
+    <select id="getSubNum" parameterType="String" resultType="int">
+    	SELECT IFNULL(count(id),0) from m_user where parent_id=#{id}
+    </select>
+    
+    <update id="updateParentId">
+    UPDATE m_user SET 
+    parent_id = #{parentId}
+    WHERE id = #{id}
+    </update>
+    
+    <select id="getDiscountsNum" parameterType="String" resultType="int">
+    	SELECT discounts_num FROM m_user WHERE id = #{userId}
+    </select>
+    
+    <update id="updateDiscountsNum">
+    	UPDATE m_user SET
+    	discounts_num = #{index}
+    	WHERE id = #{userId}
+    </update>
+</mapper>

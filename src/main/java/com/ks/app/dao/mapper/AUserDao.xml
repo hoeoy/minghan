@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AUserDao">
+	
+	<!-- 用户形象大使变更 -->
+	<update id="updateUserAmbassador">
+		UPDATE 
+			sys_user
+		SET 
+			user_ambassador = #{userAmbassador},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 修改用户星级 -->
+	<update id="updateUserLevel">
+		UPDATE 
+			sys_user
+		SET 
+			user_level = #{level},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<update id="updateRewardMoney">
+		UPDATE 
+			sys_user
+		SET 
+			reward_money = #{reward},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 修改用户余额 -->
+	<update id="updateAccountMoney">
+		UPDATE 
+			sys_user
+		SET 
+			account_money = #{money},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 累加用户佣金 -->
+	<update id="AddUpRewardMoney">
+		UPDATE 
+			sys_user
+		SET 
+			reward_money = reward_money + #{reward},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<!-- 修改用户积分 -->
+	<update id="updateScore">
+		UPDATE 
+			sys_user
+		SET 
+			point = #{score},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<resultMap id="userResult" type="AUser">
+		<id property="id" column="id" />
+		<result property="loginName" column="login_name" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="mobile" column="mobile" />
+		<result property="photo" column="photo" />
+		<result property="minPhoto" column="min_photo" />
+		<result property="delFlag" column="del_flag" />
+		<result property="openId" column="open_id" />
+		<result property="longitude" column="longitude" />
+		<result property="latitude" column="latitude" />
+		<result property="location" column="location" />
+		<result property="point" column="point" />
+	</resultMap>
+	
+    <sql id="userColumns">
+    	a.id,
+    	a.login_name,
+    	a.password,
+		a.name,
+		a.mobile,
+		a.photo,
+		a.min_photo,
+		a.open_id,
+		a.point,
+		a.location,
+		a.longitude,
+		a.latitude,
+		a.del_flag
+    </sql>
+    
+	<select id="getUserByMobile" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		WHERE 
+		user_type='3'
+		<if test="mobile != null and mobile !=''">
+			and a.mobile = #{mobile}
+		</if>
+		<if test="password != null and password !=''">
+			 and a.password=#{password}
+		</if>
+		<if test="openId != null and openId !=''">
+			 and a.open_id=#{openId}
+		</if>
+		<if test="deleteFlag != null and deleteFlag !=''">
+			 and a.del_flag=#{deleteFlag}
+		</if>
+		order by a.del_flag asc,a.create_date desc limit 1
+	</select>
+	<!-- 根据编号获得用户 -->
+	<select id="get" resultMap="userResult">
+		SELECT
+			<include refid="userColumns"/>
+		FROM sys_user a
+		WHERE a.id = #{id}
+	</select>
+	
+	<!-- 插入用户 -->
+	<insert id="insert" parameterType="com.ks.app.entity.AUser">
+		INSERT INTO sys_user(
+			id, 
+			login_name, 
+			password, 
+			name, 
+			mobile, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			photo, 
+			min_photo, 
+			sign,
+			open_id,
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{loginName}, 
+			#{password}, 
+			#{name}, 
+			#{mobile}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{photo}, 
+			#{minPhoto}, 
+			#{sign}, 
+			#{openId}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE sys_user SET 
+			password = #{password}, 
+			name = #{name}, 
+			mobile = #{mobile},
+			point =#{point}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			sign = #{sign},
+			min_photo = #{minPhoto},
+			photo = #{photo}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 根据user id修改余额 -->
+	<update id="updateUserAccountMoney">
+		UPDATE sys_user
+		SET account_money = #{accountMoney}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 更新用户信息  -->
+	<update id="updateUserInfo">
+		UPDATE sys_user 
+		<set>
+			<if test="openId != null and openId !=''">
+				open_id = #{openId},
+			</if>
+			<if test="sign != null and sign !=''">
+				sign = #{sign},
+			</if>
+			<if test="minPhoto != null and minPhoto !=''">
+				min_photo = #{minPhoto},
+			</if>
+			<if test="photo != null and photo !=''">
+				photo = #{photo},
+			</if>
+			<if test="name != null and name !=''">
+				name = #{name},
+			</if>
+			<if test="point != null and point !=''">
+				point = #{point},
+			</if>
+			<if test="location != null and location !=''">
+				location = #{location},
+			</if>
+			<if test="latitude != null and latitude !=''">
+				latitude = #{latitude},
+			</if>
+			<if test="longitude != null and longitude !=''">
+				longitude = #{longitude},
+			</if>
+			<if test="parentId != null and parentId !=''">
+				parent_id = #{parentId},
+			</if>
+			<if test="accountMoney !=null and accountMoney !=''">
+				account_money=#{accountMoney},
+			</if>
+		</set>
+		<!-- SET 
+			open_id = #{openId},
+			sign = #{sign},
+			min_photo = #{minPhoto},
+			photo = #{photo} -->
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 更新用户密码 -->
+	<update id="updatePasswordById">
+		UPDATE sys_user SET 
+			password = #{password} 
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteUserByOpenId" parameterType="string">
+		update sys_user set del_flag='1' and mobile='' and login_name=''  where open_id=#{openId}
+	</update>
+	<update id="updatePassword" parameterType="map">
+		update sys_user set password=#{password} where mobile=#{mobile} and user_type='3'
+	</update>
+	<!-- *********************************************************************************************** -->
+	<select id="findIdByOpenId" parameterType="String" resultType="String">
+	select id from sys_user where open_id=#{openId}
+</select>
+<insert id="addUser" >
+	insert into sys_user (id,open_id,update_flag_name,update_flag_card,name,photo,min_photo,province,city,parent_id,create_date) values (#{newId},#{openId},#{updateFlagName},#{updateFlagCard},#{name},#{photo},#{minPhoto},#{province},#{city},#{parentId},#{date})
+</insert>
+<select id="getToken"  resultType="com.ks.app.entity.TokenOfSql">
+	select * from access_token where id=1
+</select>
+<update id="updateToken">
+	update access_token set access_token=#{token},create_time=#{time} where id=1
+</update>
+<select id="getTokenById"  resultType="com.ks.app.entity.TokenOfSql">
+	select * from access_token where id=#{id}
+</select>
+<update id="updateTokenById">
+	update access_token set access_token=#{token},create_time=#{time} where id=#{id}
+</update>
+<update id="updateTicketById">
+	update access_token set jsapi_ticket=#{ticket},ticket_create_time=#{time} where id=#{id}
+</update>
+<select id="getUser" parameterType="String" resultType="com.ks.app.entity.AUser">
+	select * from sys_user where open_id=#{openId} order by create_date asc limit 1
+</select>
+<update id="updateAUser">
+	update sys_user set name=#{name},mobile=#{mobile},birthday=#{birthday},card=#{card},mail=#{mail},province=#{province},city=#{city},zone=#{zone},addr=#{addr},bank_type=#{bankType},bank_card=#{bankCard},update_flag_name=#{updateFlagName},update_flag_card=#{updateFlagCard} where open_id=#{openId}
+</update>
+<select id="getIdByOpenId" parameterType="String" resultType="String">
+	select id from sys_user where open_id = #{openId} order by create_date asc limit 1
+</select>
+<select id="getSubordinateById"  parameterType="String" resultType="com.ks.app.entity.AUser">
+	select * from sys_user where parent_id=#{id}
+</select>
+<update id="unsubscribe" parameterType="String">
+	update sys_user set del_flag='1' where id=#{id}
+</update>
+<update id="subscribe">
+	update sys_user set del_flag='0'
+		<if test="parentId != null and parentId !=''">
+			,parent_id=#{parentId}
+		</if>
+	 where open_id=#{openId}
+</update>
+<select id="getUserById"  parameterType="String" resultType="com.ks.app.entity.AUser">
+	select * from sys_user where id=#{userId}
+</select>
+<select id="getSubordinateNub" parameterType="String" resultType="int">
+	select IFNULL(count(id),0) from sys_user where parent_id=#{id}
+</select>
+<select id="countSub" parameterType="String" resultType="int">
+	select IFNULL(count(id),0) from sys_user where parent_id=#{id}
+</select>
+<select id="getBalanceById" parameterType="String" resultType="com.thinkgem.jeesite.modules.sys.entity.Balance">
+	select * from sys_balance where user_id=#{user_id} and ind_flag='1'
+</select>
+
+<insert id="insertToken" >
+		INSERT INTO access_token(
+		access_token,
+		expires_in,
+		create_time,
+		id)VALUES(
+		#{accessToken},
+		#{expriresIn},
+		#{createTime},
+		#{id}
+		)
+</insert>
+<select id="getBalanceOneMonthById" resultType="com.thinkgem.jeesite.modules.sys.entity.Balance">
+	SELECT * FROM sys_balance WHERE user_id=#{id} AND create_date BETWEEN #{oneMonth} AND #{now}
+</select>
+
+<update id="changDelFlag"  parameterType="String">
+	update sys_user set del_flag='0' where id=#{id}
+</update>
+<select id="getYWYopenId" resultType="String">
+	select open_id from sys_user where user_type='2'
+</select>
+
+<select id="getNameById" parameterType="String" resultType="String">
+		SELECT name FROM sys_user WHERE id = #{id}
+</select>
+
+<update id="updateParentId">
+	UPDATE sys_user SET
+	parent_id = #{parentId}
+	WHERE id = #{id}
+</update>
+
+</mapper>

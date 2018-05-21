@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.SysConstantDao">
+    
+	<select id="get" resultType="SysConstant">
+		SELECT 
+			* 
+		FROM sys_constant 
+		WHERE id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysConstant">
+		SELECT 
+			* 
+		FROM sys_constant 
+		WHERE del_flag = #{DEL_FLAG_NORMAL} 
+		<if test="type != null and type != ''">
+			AND type = #{type}
+		</if>
+		<if test="description != null and description != ''">
+			AND description LIKE CONCAT('%', #{description}, '%')
+		</if>
+		ORDER BY type, sort, update_date DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_constant(
+			id, 
+			value, 
+			type, 
+			description, 
+			sort, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{value}, 
+			#{type}, 
+			#{description}, 
+			#{sort}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_constant SET 
+			value = #{value}, 
+			type = #{type}, 
+			description = #{description}, 
+			sort = #{sort}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	<update id="batchUpdate">
+		<foreach collection="list" item="sysCon" separator=";">
+			UPDATE sys_constant SET 
+				value = #{value}, 
+				<!-- type = #{type}, 
+				description = #{description}, 
+				sort = #{sort},  -->
+				update_by = #{updateBy.id}, 
+				update_date = #{updateDate}
+			WHERE id = #{id};
+		</foreach>
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_constant SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	<update id="updatePhone">
+		UPDATE sys_constant SET
+		value = #{phone}
+		WHERE type = #{type}
+	</update>
+</mapper>

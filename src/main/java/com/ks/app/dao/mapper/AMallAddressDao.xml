@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AMallAddressDao">
+	
+	<resultMap id="addressResult" type="AMallAddress">
+		<id property="id" column="id" />
+		<result property="linkMan" column="receiver" />
+		<result property="address" column="receive_addr" />
+		<result property="telephone" column="contact" />
+		<result property="selected" column="default_state" />
+		
+		<result property="province" column="province" />
+		<result property="town" column="town" />
+		<result property="zone" column="zone" />
+	</resultMap>
+    <sql id="base_column">
+    	a.id,
+    	a.receiver,
+    	a.receive_addr,
+    	a.contact,
+    	a.default_state,
+    	a.province,
+    	a.town,
+    	a.zone
+    </sql>
+    
+	<select id="get" resultMap="addressResult">
+		SELECT
+			<include refid="base_column"/>
+		FROM delivery_address a
+		WHERE a.id = #{id} and a.del_flag='0'
+	</select>
+	
+	<!-- 插入 -->
+	<insert id="insert" parameterType="AMallAddress">
+		INSERT INTO delivery_address(
+			id,
+			receiver, 
+			receive_addr, 
+			contact, 
+			default_state, 
+			province,
+			town,
+			zone,
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{linkMan}, 
+			#{address}, 
+			#{telephone}, 
+			#{selected},
+			#{province},
+			#{town},
+			#{zone},
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<!-- 更新-->
+	<update id="update">
+		UPDATE delivery_address set
+			receiver = #{linkMan}, 
+			receive_addr = #{address}, 
+			contact = #{telephone}, 
+			
+			province = #{province}, 
+			town = #{town}, 
+			zone = #{zone}, 
+			<!-- default_state = #{selected},  -->
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	<!-- 删除-->
+	<update id="delete">
+		UPDATE delivery_address 
+		set del_flag='1'
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 设置默认地址  -->
+	<update id="updateAddressSelected">
+		<!-- 需要设置默认才重置当前用户所有的地址为未默认 -->
+		<if test="selected != null and selected == '1'.toString()">
+			UPDATE delivery_address 
+			set default_state='0'
+			WHERE create_by = #{createBy.id} and del_flag='0';
+		</if>
+		
+		UPDATE delivery_address 
+		set default_state=#{selected}
+		WHERE id = #{id};
+	</update>
+	
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultMap="addressResult">
+		SELECT
+			<include refid="base_column"/>
+		FROM delivery_address a
+		WHERE 1=1 and del_flag='0'
+		<if test="createBy != null and createBy.id != null and createBy.id != ''">
+			AND a.create_by=#{createBy.id}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.default_state desc,a.update_date desc,a.id desc
+			</otherwise>
+		</choose>
+	</select>
+</mapper>

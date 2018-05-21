@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cmd.dao.TakeOutDao">
+	
+	<!-- 根据用户id获取返现明细 -->
+	<select id="getTakeOutByUserId" resultType="TakeOut" parameterType="TakeOut">
+		SELECT
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id as backMonthId,
+			user_id as userId,
+			user_name as userName,
+			audit_flag as auditFlag,
+			audit_id as auditId,
+			audit_name as auditName,
+			remittance_flag,
+			service_charge as serviceCharge,
+			create_by as "createBy.id",
+			create_date as createDate,
+			update_by as "updateBy.id",
+			update_date as updateDate
+		FROM order_out_info 
+		WHERE del_flag='0' and user_id = #{userId}
+		<if test="type != null and type !=''">
+			and type = #{type}
+		</if>
+		order by create_date desc,id desc
+	</select>
+
+	<select id="findList" resultType="TakeOut">
+		SELECT
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id as backMonthId,
+			user_id as userId,
+			user_name as userName,
+			audit_flag as auditFlag,
+			audit_id as auditId,
+			audit_name as auditName,
+			remittance_flag,
+			service_charge as serviceCharge,
+			create_by as "createBy.id",
+			create_date as createDate,
+			update_by as "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM order_out_info 
+		WHERE del_flag='0' 
+		<if test="type != null and type !=''">
+			and type = #{type}
+		</if>
+		<if test="auditFlag !=null and auditFlag !=''">
+			AND audit_flag = #{auditFlag}
+		</if>
+		<if test="userId !=null and userId !=''">
+			AND user_id = #{userId}
+		</if>
+		<if test="userName !=null and userName !=''">
+			AND user_name LIKE CONCAT('%', #{userName}, '%')
+		</if>
+		ORDER BY create_date DESC,id desc
+	</select>
+
+
+
+	<!-- 未审核改为已审核 -->
+	<update id="changeFlag">
+		UPDATE 
+			order_out_info
+		SET 
+			audit_flag = '1', 
+			audit_id = #{userId},
+			update_date = NOW()
+		WHERE 
+			id = #{id}
+	</update>
+
+	<!-- 订单表插入项目信息 -->
+	<insert id="insertOrder" parameterType="TakeOut">
+		INSERT INTO order_out_info (
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id,
+			user_id ,
+			user_name ,
+			audit_flag ,
+			audit_id ,
+			audit_name ,
+			remittance_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag
+		) VALUES (
+			#{id},
+			#{type},
+			#{brokerage},
+			#{back},
+			#{backMonthId},
+			#{userId},
+			#{userName},
+			#{auditFlag},
+			#{auditId},
+			#{auditName},
+			#{remittanceFlag},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+		
+	<!-- 根据提现单主键id查 -->
+	<select id="getTakeOutById" parameterType="string" resultType="TakeOut">
+		SELECT
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id as backMonthId,
+			user_id as userId,
+			audit_flag as auditFlag,
+			audit_id as auditId
+		FROM order_out_info
+		WHERE id = #{orderId}
+	</select>
+
+	<!-- 获取全部提现单 -->
+	<select id="getList" resultType="TakeOut">
+		SELECT
+			id,
+			type,
+			brokerage ,
+			back ,
+			back_month_id as backMonthId,
+			user_id as userId,
+			audit_flag as auditFlag,
+			audit_id as auditId
+		FROM order_out_info
+	</select>
+	
+</mapper>
+
+

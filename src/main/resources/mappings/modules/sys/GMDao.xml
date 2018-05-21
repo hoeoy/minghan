@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.GMDao">
+	
+	<resultMap id="gmResult" type="User">
+		<id property="id" column="id" />
+		<result property="loginName" column="login_name" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<!-- <result property="email" column="email" />
+		<result property="phone" column="phone" /> -->
+		<result property="mobile" column="mobile" />
+		<result property="userType" column="user_type" />
+		<result property="userLevel" column="user_level"/>
+		<!-- <result property="loginIp" column="login_ip" />
+		<result property="loginDate" column="login_date" /> -->
+		<result property="remarks" column="remarks" />
+		<result property="loginFlag" column="loginFlag" />
+		<result property="photo" column="photo" />
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<!-- <result property="sign" column="sign" /> -->
+		<result property="minPhoto" column="min_photo" />
+		<result property="openId" column="open_id" />
+		<result property="point" column="point" />
+		<result property="delFlag" column="del_flag" />
+		<result property="birthday" column="birthday"/>
+		<result property="card" column="card"/>
+		<result property="mail" column="mail"/>
+		<result property="province" column="province"/>
+		<result property="city" column="city"/>
+		<result property="zone" column="zone"/>
+		<result property="addr" column="addr"/>
+		<result property="bankType"  column="bank_type"/>
+		<result property="bankCard" column="bank_card"/>
+		<result property="accountMoney" column="account_money"/>
+		<result property="rewardMoney" column="reward_money"/>
+		<result property="backMoney" column="back_money"/>
+		<result property="parentId" column="parent_id"/>
+		<result property="startFlag"  column="start_flag"/>
+		<collection property="roleList" ofType="Role">
+			<id property="id" column="roleList.id" />
+			<!-- <result property="office.id" column="roleList.office.id" /> -->
+			<result property="name" column="roleList.name" />
+			<result property="enname" column="roleList.enname" />
+			<result property="roleType" column="roleList.roleType" />
+			<result property="dataScope" column="roleList.dataScope" />
+		</collection>
+	</resultMap>
+	
+    <sql id="gmColumns">
+    	a.id,
+    	a.login_name,
+    	a.password,
+		a.name,
+		a.mobile,
+		a.birthday,
+		a.user_type,
+		a.user_level,
+		a.card,
+		a.mail,
+		a.province,
+		a.city,
+		a.zone,
+		a.addr,
+		a.bank_type,
+		a.bank_card,
+		a.account_money,
+		a.reward_money,
+		a.back_money,
+		a.remarks,
+		a.login_flag,
+		a.photo,
+		a.min_photo,
+		a.point,
+		a.open_id,
+		a.parent_id,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.start_flag,
+        r.id AS "roleList.id",
+        r.name AS "roleList.name",
+        r.enname AS "roleList.enname",
+        r.role_type AS "roleList.roleType",
+        r.data_scope AS "roleList.dataScope"
+    </sql>
+    
+    <sql id="gmJoins">
+        LEFT JOIN (select sr.id,sr.name,sr.enname,sr.role_type,sr.data_scope,ur.user_id from sys_role sr left join sys_user_role ur ON sr.id = ur.role_id ) r ON r.user_id = a.id
+    </sql>
+	
+	
+	<!-- 分页查询用户信息 -->
+	<select id="findList" resultMap="gmResult">
+		SELECT
+			<include refid="gmColumns"/>
+		FROM sys_user a
+		<include refid="gmJoins"/>
+		<if test="role != null and role.id != null and role.id != ''">
+			JOIN sys_user_role sur ON sur.user_id = a.id AND sur.role_id = #{role.id}
+		</if>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		AND a.user_type ='1'
+		<!-- 如果不是超级管理员，则不显示超级管理员用户 -->
+		<if test="!currentUser.admin">
+			AND a.id != '1'
+		</if>
+		<if test="loginName != null and loginName != ''">
+			AND a.login_name like CONCAT('%', #{loginName}, '%')
+		</if>
+		<if test="name != null and name != ''">
+			AND a.name like CONCAT('%', #{name}, '%')
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND a.mobile like CONCAT('', #{mobile}, '%')
+		</if>
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY  a.update_date desc,a.id desc
+			</otherwise>
+		</choose>
+	</select>
+	
+	<!-- 根据编号获得用户 -->
+	<select id="get" resultMap="gmResult">
+		SELECT
+			<include refid="gmColumns"/>
+		FROM sys_user a
+		<include refid="gmJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!-- 更新用户 -->
+	<update id="update">
+		UPDATE sys_user SET 
+			login_name = #{loginName}, 
+			password = #{password}, 
+			name = #{name}, 
+			mobile = #{mobile}, 
+			user_type = '1', 
+			update_date = #{updateDate}, 
+			remarks = #{remarks},
+			login_flag = #{loginFlag},
+			photo = #{photo},
+			min_photo = #{minPhoto}
+		WHERE id = #{id}
+	</update>
+	
+	<!-- 插入用户 -->
+	<insert id="insert">
+		INSERT INTO sys_user(
+			id, 
+			login_name, 
+			password, 
+			name, 
+			mobile, 
+			user_type,
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			login_flag, 
+			photo, 
+			min_photo, 
+			point, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{loginName}, 
+			#{password}, 
+			#{name}, 
+			#{mobile}, 
+			'1', 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{remarks}, 
+			#{loginFlag}, 
+			#{photo}, 
+			#{minPhoto}, 
+			#{point}, 
+			#{delFlag}
+		)
+	</insert>
+	
+</mapper>

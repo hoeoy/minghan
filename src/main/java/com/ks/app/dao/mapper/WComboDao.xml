@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.WComboDao" >
+
+	<resultMap id="wComboMap" type="WCombo">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="number" column="number"/>
+		<result property="sort" column="sort"/>
+		<result property="title" column="title"/>
+		<result property="content" column="content"/>
+		<result property="description" column="description"/>
+		<result property="discount" column="discount" />
+		<result property="oldPrice" column="old_price" />
+		<result property="currentPrice" column="current_price" />
+		<result property="score" column="score" />
+		<result property="status" column="status" />
+		<result property="saleCount" column="sale_count" />
+		<result property="logo" column="logo" />
+	</resultMap>
+	
+	<!-- 获取所有形象大使信息 -->
+	<select id="getComboList" resultMap="wComboMap" >
+		SELECT
+			t.id, 
+			t.name, 
+			t.number, 
+			t.sort, 
+			t.title, 
+			t.content, 
+			t.description, 
+			t.discount, 
+			t.old_price, 
+			t.current_price, 
+			t.score, 
+			t.status, 
+			t.sale_count, 
+			t.logo
+		FROM combo_info t 
+		order by t.sort
+	</select>
+	
+	<!-- 获取套餐详细信息 -->
+	<select id="getComboById" parameterType="string" resultMap="wComboMap" >
+		SELECT
+			t.id, 
+			t.name, 
+			t.number, 
+			t.sort, 
+			t.title, 
+			t.content, 
+			t.description, 
+			t.discount, 
+			t.old_price, 
+			t.current_price, 
+			t.score, 
+			t.status, 
+			t.sale_count, 
+			t.logo 
+		FROM combo_info t 
+		WHERE 
+			t.del_flag = '0' and t.status = '1' and t.id = #{id}
+	</select>
+	
+	<!-- 获取套餐合同详情 -->
+	<select id="getComboContratsByComboId" parameterType="string" resultType="WComboContract" >
+		SELECT 
+			id, 
+			combo_id as comboId, 
+			sort, 
+			contract
+		FROM combo_contract 
+		WHERE combo_id = #{comboId}
+	</select>
+	
+	<!-- 获取套餐滚动图详情 -->
+	<select id="getComboImagesByComboId" parameterType="string" resultType="WComboImage" >
+		SELECT 
+			id, 
+			combo_id as comboId, 
+			sort, 
+			image
+		FROM combo_image
+		WHERE combo_id = #{id}
+	</select>
+	
+	<!-- 套餐购买次数+1 -->
+	<update id="count" >
+		UPDATE 
+			combo_info 
+		SET
+			sale_count = sale_count + 1,
+			update_date = NOW(),
+			update_by = #{updateBy.id}
+		WHERE
+			id = #{id}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+</mapper>

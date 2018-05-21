@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cmd.dao.ItemDao">
+
+	<!-- 获取滚动图地址 -->
+	<select id="getImagesById" parameterType="string" resultType="ItemImage">
+		SELECT
+			id,
+			item_id,
+			item_image
+		FROM item_image
+		WHERE item_id = #{itemId}
+	</select>
+	
+	<!-- 查询项目详情 -->
+	<select id="getItemById" parameterType="string" resultMap="baseMap">
+		SELECT 
+			<include refid="allColumns"></include>
+		FROM item_info t 
+		WHERE 
+			t.del_flag = '0' and t.status = '1' and t.id = #{id}
+	</select>
+
+	<!-- 项目销售次数+1 -->
+	<update id="addCount">
+		UPDATE item_info
+		SET sale_count = sale_count + 1
+		WHERE id = #{id}
+	</update>
+
+	<resultMap id="baseMap" type="Item">
+		<id property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="number" column="number" />
+		<result property="sort" column="sort" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="description" column="description" />
+		<result property="oldPrice" column="old_price" />
+		<result property="currentPrice" column="current_price" />
+		<result property="status" column="status" />
+		<result property="saleCount" column="sale_count" />
+		<result property="logo" column="logo" />
+		<result property="type" column="type"/>
+		<result property="shopId" column="shop_id"/>
+		<result property="oldMin" column="old_min" />
+		<result property="oldMax" column="old_max" />
+		<result property="currentMin" column="current_min" />
+		<result property="currentMax" column="current_max" />
+	</resultMap>
+	<sql id="allColumns">
+		t.id,
+		t.name,
+		t.number,
+		t.sort,
+		t.title,
+		t.type,
+		t.shop_id,
+		t.content,
+		t.description,
+		t.old_price,
+		t.old_min,
+		t.old_max,
+		t.current_price,
+		t.current_min,
+		t.current_max,
+		t.status,
+		t.sale_count,
+		t.logo
+	</sql>
+	
+	<select id="findList" resultMap="baseMap">
+		SELECT 
+			<include refid="allColumns"></include>
+		FROM item_info t 
+		WHERE t.del_flag = #{DEL_FLAG_NORMAL}
+		<if test="name != null and name != ''">
+			AND t.name like CONCAT('%', #{name}, '%')
+		</if>
+		<if test="description != null and description != ''">
+			AND t.description like CONCAT('%', #{description}, '%')
+		</if>
+		<if test="type != null and type != ''">
+			AND t.type = #{type}
+		</if>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY t.sort
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="delete">
+		UPDATE item_info SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="update">
+		UPDATE item_info SET 
+			name = #{name},
+			number = #{number},
+			sort = #{sort},
+			title = #{title},
+			type = #{type},
+			shop_id = #{shopId},
+			content = #{content},
+			description = #{description},
+			old_price = #{oldPrice},
+			old_min = #{oldMin},
+			old_max = #{oldMax},
+			current_price = #{currentPrice},
+			current_min = #{currentMin},
+			current_max = #{currentMax},
+			status = #{status},
+			sale_count = #{saleCount},
+			logo = #{logo},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			del_flag = #{delFlag}
+		WHERE id = #{id}
+	</update>
+	
+	<select id="get" resultMap="baseMap">
+		SELECT 
+			<include refid="allColumns"></include>
+		FROM item_info t 
+		WHERE t.id = #{id}
+	</select>
+	
+	<insert id="insertItemImage" parameterType="java.util.List">
+		INSERT INTO item_image (
+			id,
+			item_id,
+			item_image,
+			create_by,
+			create_date,
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES 
+		<foreach collection="list" item="images" separator=",">
+			(
+				#{images.id},
+				#{images.itemId},
+				#{images.itemImage},
+				#{images.createBy.id},
+				#{images.createDate},
+				#{images.updateBy.id},
+				#{images.updateDate},
+				#{images.delFlag}
+			)
+		</foreach>
+	</insert>
+	
+	<insert id="insert">
+		INSERT INTO item_info(
+			id, 
+			name ,
+			number ,
+			sort ,
+			title ,
+			type,
+			shop_id,
+			content,
+			description,
+			old_price ,
+			old_min ,
+			old_max ,
+			current_price,
+			current_min,
+			current_max,
+			status ,
+			sale_count,
+			logo ,
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{name},
+			#{number},
+			#{sort},
+			#{title},
+			#{type},
+			#{shopId},
+			#{content},
+			#{description},
+			#{oldPrice},
+			#{oldMin},
+			#{oldMax},
+			#{currentPrice},
+			#{currentMin},
+			#{currentMax},
+			#{status},
+			#{saleCount},
+			#{logo},
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate},  
+			#{delFlag}
+		)
+	</insert>
+	
+	<!-- 删除项目的关联图片 -->
+	<update id="deleteItemImages">
+		DELETE FROM item_image
+		WHERE item_id=#{itemId}
+	</update>
+
+</mapper>

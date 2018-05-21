@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.ADoctorDao">
+	
+<select id="getAll" resultType="com.ks.app.entity.ADoctor">
+	SELECT * FROM sys_doctor ORDER BY attestation_flag DESC
+</select>
+<select id="get"  parameterType="String" resultType="com.ks.app.entity.ADoctor">
+	select * from sys_doctor where id=#{id}
+</select>
+</mapper>

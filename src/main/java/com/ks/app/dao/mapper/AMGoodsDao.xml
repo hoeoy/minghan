@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AMGoodsDao">
+    <resultMap id="mGoodsMap" type="AMGoods">
+		<id property="id" column="id"/>
+		<result property="type" column="type"/>
+		<result property="name" column="name"/>
+		<result property="logo" column="logo"/>
+		<result property="description" column="description"/>
+		<result property="market" column="market"/>
+		<result property="price" column="price"/>
+		<result property="sellNum" column="sell_num"/>
+		<result property="putFlag" column="put_flag"/>
+		<result property="sort" column="sort"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	 <resultMap id="mGoodsImageMap" type="AMGoodsImage">
+		<id property="id" column="id"/>
+		<result property="goodsId" column="goods_id"/>
+		<result property="goodsImage" column="goods_image"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	
+	<sql id="mGoodsSQL">
+		id,
+		type,
+		name,
+		logo,
+		description,
+		market,
+		price,
+		sell_num,
+		put_flag,
+		sort
+	</sql>
+	
+	<sql id="mGoodsImageSQL">
+		id,
+		goods_id,
+		goods_image
+	</sql>
+	
+	<select id="getGoodsByType" resultMap="mGoodsMap" parameterType="String">
+		SELECT 
+		<include refid="mGoodsSQL"/>
+		FROM m_goods_info WHERE type = #{type} AND del_flag = '0' AND put_flag = '1'
+	</select>
+	
+	<select id="get" resultMap="mGoodsMap" >
+		SELECT 
+		<include refid="mGoodsSQL"/>
+		FROM m_goods_info WHERE id = #{id} AND del_flag = '0'
+	</select>
+	
+	<select id="getImageByGoodsId" parameterType="String" resultMap="mGoodsImageMap">
+		SELECT 
+		<include refid="mGoodsImageSQL"/>
+		FROM m_goods_image_info WHERE goods_id = #{id} AND del_flag = '0'
+	</select>
+	
+	<select id="getTwoGoods" resultMap="mGoodsMap">
+		SELECT
+		<include refid="mGoodsSQL"/>
+		FROM m_goods_info
+		WHERE put_flag = '1'
+		ORDER BY create_date DESC LIMIT 0,2
+	</select>
+	
+	<select id="getSellNumById" parameterType="String" resultType="int">
+		SELECT sell_num FROM m_goods_info WHERE id = #{goodsId}
+	</select>
+	<update id="updateSellNum">
+		UPDATE m_goods_info SET 
+		sell_num = #{sellNum}
+		WHERE id=#{id}
+	</update>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.WBrokerageDao">
+
+	<insert id="insert" parameterType="WBrokerage">
+		INSERT INTO brokerage_info (
+			id,
+			money,
+			user_id ,
+			status ,
+			order_id ,
+			order_type,
+			create_by,
+			create_date,
+			update_by,
+			update_date ,
+			del_flag
+		) VALUES (
+			#{id},
+			#{money},
+			#{userId},
+			#{status},
+			#{orderId},
+			#{orderType},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{delFlag}
+		)
+	</insert>
+	
+	<select id="getBrokerageByUser"  resultType="com.ks.app.entity.WBrokerage">
+	SELECT 
+			id ,
+			money ,
+			user_id as userId,
+			status ,
+			order_id as orderId,
+			order_type as orderType,
+			create_by AS "createBy.id ",
+			create_date as createDate,
+			update_by AS "updateBy.id ",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM brokerage_info
+		WHERE del_flag = '0'
+		 AND user_id=#{user_id} ORDER BY create_date DESC LIMIT #{n},#{s}
+	
+	</select>
+	
+	<select id="getBDPage" resultType="int">
+	select ifnull(count(id),0) from brokerage_info where user_id = #{id}
+	</select>
+	
+</mapper>

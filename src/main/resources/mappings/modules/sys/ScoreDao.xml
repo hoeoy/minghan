@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.ScoreDao">
+
+	<!-- 根据用户id查积分明细 -->
+	<select id="getScoreByUserId" parameterType="string" resultType="com.thinkgem.jeesite.modules.sys.entity.Score">
+		SELECT 
+			id ,
+			point ,
+			user_id as userId,
+			status ,
+			order_id as orderId,
+			order_type as orderType,
+			create_by AS "createBy.id",
+			create_date as createDate,
+			update_by AS "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM score_info
+		WHERE del_flag = '0' 
+		AND user_id = #{id}
+		ORDER BY create_date DESC
+	</select>
+
+	<select id="findList" resultType="Score">
+		SELECT 
+			id ,
+			point ,
+			user_id as userId,
+			status ,
+			order_id as orderId,
+			order_type as orderType,
+			create_by AS "createBy.id",
+			create_date as createDate,
+			update_by AS "updateBy.id",
+			update_date as updateDate,
+			del_flag as delFlag
+		FROM score_info
+		WHERE del_flag = '0'
+		<if test="userId!=null and userId!=''">
+		 AND user_id in (SELECT id FROM sys_user WHERE name like CONCAT('%', #{userId}, '%'))
+		 </if>
+		 <if test="startTime!=null and startTime!=''" >
+		AND  create_date BETWEEN #{startTime} AND NOW()
+		 </if>
+		 <if test="endTime!=null and endTime!=''">
+		 AND create_date &lt; #{endTime}
+		 </if>
+		ORDER BY update_date DESC
+	</select>
+	
+</mapper>

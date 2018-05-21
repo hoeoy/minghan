@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.MTakeOutDao">
+    <resultMap id="mTakeOutMap" type="MTakeOut">
+		<result property="id" column="id"/>
+		<result property="userId" column="user_id"/>
+		<result property="State" column="state"/>
+		<result property="remittanceGM" column="remittance_gm" />
+		<result property="remittanceTime" column="remittance_time" />
+		<result property="money" column="money" />
+		<result property="shouxu" column="shouxu" />
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+	</resultMap>
+	<sql id="mTakeOutSQL">
+		a.id,
+		a.user_id,
+		a.state,
+		a.remittance_gm,
+		a.remittance_time,
+		a.money,
+		a.shouxu,
+		a.create_by AS "createBy.id",
+		a.create_date
+	</sql>
+	
+	<select id="findList" resultMap="mTakeOutMap">
+		SELECT 
+		<include refid="mTakeOutSQL"/>
+		FROM m_take_out a WHERE del_flag = '0'
+		<if test="userName!=null and userName!=''">
+		 AND user_id = any (SELECT id FROM m_user WHERE user_id = any (SELECT id FROM sys_user WHERE name like CONCAT('%', #{userName}, '%')))
+		 </if>
+		 <if test="startTime!=null and startTime!=''" >
+		AND  create_date BETWEEN #{startTime} AND NOW()
+		 </if>
+		 <if test="endTime!=null and endTime!=''">
+		 AND create_date &lt; #{endTime}
+		 </if>
+		 <if test="state != null and state != '' ">
+		 AND state = #{state}
+		 </if>
+		 ORDER BY create_date DESC
+	</select>
+	
+	<select id="get" resultMap="mTakeOutMap">
+		SELECT 
+		<include refid="mTakeOutSQL"/>
+		FROM m_take_out a WHERE id = #{id}
+		AND del_flag = '0'
+	</select>
+	
+	<update id="transfer" >
+		UPDATE m_take_out SET 
+		state = '1',
+		remittance_time = #{remittanceTime} ,
+		remittance_gm = #{remittanceGM}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

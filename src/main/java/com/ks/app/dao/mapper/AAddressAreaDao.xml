@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AAddressAreaDao" >
+	<!-- <typeAlias alias="articleAttach" type="com.ks.app.entity.AArticleAttach"/> -->
+	
+	<resultMap id="addressAreaMap" type="AAddressArea">
+		<result property="id" column="id"/>
+		<result property="pid" column="pid"/>
+		<result property="name" column="name"/>
+		<result property="pname" column="pname" />
+	</resultMap>
+
+  <sql id="base_column">
+    	t.id,
+    	t.pid,
+    	t.name,
+    	t.pname
+    </sql>
+    <!-- 查询 -->
+	<select id="findList" resultMap="addressAreaMap">
+		SELECT
+			<include refid="base_column"/>
+		FROM delivery_address_area t
+		WHERE 1=1 and t.del_flag='0'
+		<if test="pid != null and pid != ''">
+			AND t.pid=#{pid}
+		</if>
+	</select>
+	<insert id="insert" parameterType="AAddressArea" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO
+		delivery_address_area (
+
+		name,
+		pid,
+		create_by, 
+		create_date, 
+		update_by, 
+		update_date, 
+		del_flag
+		)
+		VALUES (
+
+		#{name}, 
+		 #{pid}, 
+		#{createBy.id}, 
+		#{createDate}, 
+		#{updateBy.id}, 
+		#{updateDate}, 
+		#{delFlag}
+		)
+	</insert>
+	<select id="get" resultMap="addressAreaMap">
+		SELECT
+			<include refid="base_column"/>
+		FROM delivery_address_area t
+		WHERE t.id = #{id} and t.del_flag='0'
+	</select>
+</mapper>

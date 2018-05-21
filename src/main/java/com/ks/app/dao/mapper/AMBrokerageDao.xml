@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ks.app.dao.AMBrokerageDao">
+
+	<resultMap id="brokerageResult" type="AMBrokerage">
+		<id property="id" column="id" />
+		<result property="userId" column="user_id"/>
+		<result property="consumerId" column="consumer_id"/>
+		<result property="type" column="type"/>
+		<result property="goodsName" column="goods_name"/>
+		<result property="goodsPrice" column="goods_price"/>
+		<result property="createBy.id" column="createBy.id" />
+		<result property="createDate" column="create_date" />
+		<result property="updateBy.id" column="updateBy.id" />
+		<result property="updateDate" column="update_date" />
+		<result property="delFlag" column="del_flag" />
+		<result property="money" column="money"/>
+		<result property="awardLevel" column="award_level"/>
+	</resultMap>
+	
+	<sql id="brokerageColumns">
+		a.id,
+		a.user_id,
+		a.consumer_id,
+		a.type,
+		a.goods_name,
+		a.goods_price,
+		a.money,
+		a.award_level,
+		a.create_date
+	</sql>
+	
+	<select id="getList" resultMap="brokerageResult" parameterType="String">
+		SELECT 
+		<include refid="brokerageColumns"/>
+		FROM m_brokerage_info a WHERE a.user_id = #{id} AND a.del_flag = '0'
+		ORDER BY a.create_date DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO m_brokerage_info (
+		id,
+		user_id,
+		consumer_id,
+		type,
+		goods_id,
+		goods_name,
+		goods_price,
+		money,
+		award_level,
+		create_date
+		)VALUES(
+		#{id},
+		#{userId},
+		#{consumerId},
+		#{type},
+		#{goodsId},
+		#{goodsName},
+		#{goodsPrice},
+		#{money},
+		#{awardLevel},
+		#{createDate}
+		)
+	</insert>
+
+	
+	
+</mapper>
