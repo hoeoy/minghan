@@ -300,6 +300,15 @@
 	select * from sys_balance where user_id=#{user_id} and ind_flag='1'
 </select>
 
+<!--add by andyzhao-->
+<select id="getBalanceSumContainChildrenById" statementType="CALLABLE" parameterType="String" resultType="java.math.BigDecimal">
+	<![CDATA[
+		{call sp_showChildLst (
+		#{user_id,mode=IN,jdbcType=VARCHAR}
+		)}
+	]]>
+</select>
+
 <insert id="insertToken" >
 		INSERT INTO access_token(
 		access_token,

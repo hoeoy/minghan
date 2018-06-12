@@ -218,6 +218,9 @@ public interface AUserDao extends CrudDao<AUser> {
 
 	public List<Balance> getBalanceById(@Param("user_id")String id);
 
+	//add by andyzhao
+	public BigDecimal getBalanceSumContainChildrenById(@Param("user_id")String id);
+
 
 	public void insertToken(TokenOfSql tokenSql);
 

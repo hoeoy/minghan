@@ -130,7 +130,13 @@ public class ParentIdController extends BaseController{
 			list = Lists.newArrayList();
 		}
 		for(int i =0;i<list.size();i++){
-			BigDecimal bd = aUserService.getBalanceById(list.get(i).getId());
+			//change by andyzhao
+///			BigDecimal bd = aUserService.getBalanceById(list.get(i).getId());
+			BigDecimal bd = aUserService.getBalanceSumContainChildrenById(list.get(i).getId());
+
+			//end change
+
+
 			list.get(i).setPerformance(bd);
 			
 			int nub = aUserService.countSub(list.get(i).getId());

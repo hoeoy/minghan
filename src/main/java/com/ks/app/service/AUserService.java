@@ -378,6 +378,17 @@ public class AUserService extends CrudService<AUserDao, AUser> {
 			}
 		return bd;
 	}
+
+	//add by andyzhao
+	public BigDecimal getBalanceSumContainChildrenById(String id) {
+		BigDecimal bd = aUserDao.getBalanceSumContainChildrenById(id);
+		if (bd == null) {
+			bd = new BigDecimal("0");
+		}
+		return bd;
+	}
+
+
 	public BigDecimal getAllPerformanceById(String id) {
 		BigDecimal bd = new BigDecimal(0);
 		bd=recursionPerformance(bd,id);
