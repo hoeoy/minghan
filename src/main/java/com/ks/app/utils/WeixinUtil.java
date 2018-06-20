@@ -59,8 +59,8 @@ public class WeixinUtil {
 	public static final int TOKEN_ID = 2;//token对应的记录id
 	
 	//zj测试号
-	public static final String APPID="wxb0f43854b0753894";
-	public static final String APPSECRET="ebcac0f7e94a07f5dc75e7d311f97d28";
+	public static final String APPID="wx036f7ac5836cb8a7";
+	public static final String APPSECRET="c31fcc8f52e2633b165f57a258e6068b";
 	//public static final String APPID="wxb0f43854b0753894";
 	//public static final String APPSECRET="ebcac0f7e94a07f5dc75e7d311f97d28";
 	//hzy测试号

@@ -54,7 +54,8 @@ public class UserController extends BaseController {
 	private SystemService systemService;
 	@Autowired
 	private UserDao userDao;
-	
+	@Autowired
+	private AUserService aUserService;
 	/*@ModelAttribute
 	public User get(@RequestParam(required=false) String id) {
 		if (StringUtils.isNotBlank(id)){
@@ -77,7 +78,11 @@ public class UserController extends BaseController {
 		Page<User> page = systemService.findUser(new Page<User>(request, response), user);
 		List<User> list =page.getList();
 		for(int i=0;i<list.size();i++){
-			BigDecimal bd = systemService.getBalanceById(list.get(i).getId());
+//			BigDecimal bd = systemService.getBalanceById(list.get(i).getId());
+			//change by andyzhao
+//			BigDecimal bd = aUserService.getBalanceById(list.get(i).getId());
+			BigDecimal bd = aUserService.getBalanceSumContainChildrenById(list.get(i).getId());
+			//end change
 			list.get(i).setPerformance(bd);
 			String UserA= list.get(i).getUserAmbassador();
 			if(UserA==null||"".equals(UserA)){
